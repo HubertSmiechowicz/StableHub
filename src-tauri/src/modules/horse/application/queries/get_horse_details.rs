@@ -24,6 +24,6 @@ where
             .repository
             .find_details_by_id(&query.id)
             .await?
-            .ok_or_else(|| "Horse was not found".to_string())
+            .ok_or_else(|| "Nie znaleziono konia".to_string())
     }
 }

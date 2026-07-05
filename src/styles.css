@@ -311,13 +311,15 @@ h1 {
   color: #dbe1e7;
 }
 
-.horse-form {
+.horse-form,
+.entity-form {
   display: grid;
   gap: 12px;
   margin-top: 18px;
 }
 
-.horse-form label {
+.horse-form label,
+.entity-form label {
   display: grid;
   gap: 6px;
   color: #c9d1d9;
@@ -326,7 +328,9 @@ h1 {
 }
 
 .horse-form input,
-.horse-form select {
+.horse-form select,
+.entity-form input,
+.entity-form select {
   width: 100%;
   min-height: 40px;
   padding: 0 10px;
@@ -337,7 +341,9 @@ h1 {
 }
 
 .horse-form input:focus,
-.horse-form select:focus {
+.horse-form select:focus,
+.entity-form input:focus,
+.entity-form select:focus {
   border-color: #72d68c;
   outline: 0;
 }
@@ -389,13 +395,15 @@ h1 {
   gap: 10px;
 }
 
-.horse-list {
+.horse-list,
+.inventory-list {
   display: grid;
   gap: 10px;
   margin-top: 18px;
 }
 
-.horse-row {
+.horse-row,
+.inventory-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -412,40 +420,47 @@ h1 {
 }
 
 .horse-row:hover,
-.horse-row.selected {
+.horse-row.selected,
+.inventory-row:hover {
   border-color: #4c9660;
   background: #18261d;
 }
 
 .horse-row p,
+.inventory-row p,
 .muted,
 .error-message {
   margin: 0;
 }
 
 .horse-row p,
+.inventory-row p,
 .muted {
   color: #a4acb5;
 }
 
-.horse-row span {
+.horse-row span,
+.inventory-row span {
   color: #8df3a7;
   font-size: 0.78rem;
   font-weight: 800;
   text-transform: uppercase;
 }
 
-.horse-details-panel {
+.horse-details-panel,
+.entity-details-panel {
   min-height: 420px;
 }
 
-.horse-details {
+.horse-details,
+.entity-details {
   display: grid;
   gap: 18px;
   margin-top: 18px;
 }
 
-.horse-details-hero {
+.horse-details-hero,
+.entity-details-hero {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -456,12 +471,14 @@ h1 {
   background: #15191e;
 }
 
-.horse-details-hero h3 {
+.horse-details-hero h3,
+.entity-details-hero h3 {
   margin: 4px 0 0;
   font-size: 1.55rem;
 }
 
-.horse-details-hero span {
+.horse-details-hero span,
+.entity-details-hero span {
   color: #8df3a7;
   font-size: 0.78rem;
   font-weight: 800;

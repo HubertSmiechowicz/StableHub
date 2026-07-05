@@ -3,6 +3,7 @@ import { ref } from "vue";
 import { createHorse } from "../api/horseApi";
 import HorseCreateForm from "../components/HorseCreateForm.vue";
 import type { CreateHorseRequest } from "../types/horse";
+import { formatError } from "../../../shared/errors";
 
 const emit = defineEmits<{
   created: [id: string];
@@ -18,7 +19,7 @@ async function submit(request: CreateHorseRequest) {
     const horse = await createHorse(request);
     emit("created", horse.id);
   } catch (caught) {
-    error.value = String(caught);
+    error.value = formatError(caught, "Nie udało się zapisać konia.");
   }
 }
 </script>

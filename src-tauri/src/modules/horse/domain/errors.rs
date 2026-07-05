@@ -7,8 +7,8 @@ pub enum HorseDomainError {
 impl std::fmt::Display for HorseDomainError {
     fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Self::EmptyName => write!(formatter, "Horse name is required"),
-            Self::NameTooLong => write!(formatter, "Horse name cannot be longer than 80 characters"),
+            Self::EmptyName => write!(formatter, "Imię konia jest wymagane"),
+            Self::NameTooLong => write!(formatter, "Imię konia nie może być dłuższe niż 80 znaków"),
         }
     }
 }

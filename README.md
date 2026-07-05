@@ -16,6 +16,7 @@ Obecnie istnieje:
 - przygotowana struktura backendu pod DDD i Modular Monolith,
 - przygotowane zależności pod lokalną bazę SQLite przez SQLx,
 - pierwszy pion modułu `horse`: `CreateHorse` i `ListHorses`,
+- pierwszy pion modułu `inventory`: `CreateInventoryItem`, `ListInventoryItems` i `GetInventoryItemDetails`,
 - podstawowa konfiguracja buildów desktopowych.
 
 ## Założenia produktu
@@ -111,6 +112,8 @@ Aktualne moduły:
 
 Katalog `src-tauri/src/platform/sqlite` jest miejscem na przyszłą techniczną obsługę SQLite: ścieżkę pliku bazy, connection pool i uruchamianie migracji.
 
+Migracje SQLite są trzymane centralnie w `src-tauri/src/platform/sqlite/migrations`, ponieważ SQLx śledzi migracje globalnie dla jednego pliku bazy danych.
+
 ## Przepływ danych
 
 StableHub respektuje kierunek zależności typowy dla DDD, Ports & Adapters i CQRS:
@@ -173,6 +176,24 @@ HorsesListView
 HorseCreateView
 HorseDetailsView
 ```
+
+## Moduł `inventory`
+
+Pierwsza implementacja modułu `inventory` obejmuje podstawowy magazyn stajni:
+
+- utworzenie pozycji magazynowej przez command `CreateInventoryItem`,
+- pobranie aktywnych pozycji przez query `ListInventoryItems`,
+- pobranie szczegółów pozycji przez query `GetInventoryItemDetails`,
+- zapis lokalny w SQLite,
+- migrację tabeli `inventory_items`,
+- aktualny stan ilościowy,
+- jednostkę miary,
+- minimalny stan,
+- średnie dzienne zużycie,
+- wyliczanie liczby dni zapasu w read modelu,
+- osobne widoki listy, dodawania i szczegółów w UI.
+
+Na tym etapie moduł nie ma jeszcze historii ruchów magazynowych, inwentaryzacji ani alertów niskiego stanu. Te elementy są zapisane w `docs/TODO.md`.
 
 Aktualna tabela:
 

@@ -173,11 +173,20 @@ Techniczna obsluga SQLite jest w:
 src-tauri/src/platform/sqlite
 ```
 
-Migracje specyficzne dla modulu moga byc trzymane przy module:
+Migracje SQLite sa trzymane centralnie:
 
 ```text
-src-tauri/src/modules/horse/infrastructure/persistence/sqlite/migrations
+src-tauri/src/platform/sqlite/migrations
 ```
+
+Powod: SQLx zapisuje migracje w jednej globalnej tabeli `_sqlx_migrations` dla jednego pliku SQLite. Przy wielu osobnych migratorach modulowych latwo doprowadzic do konfliktu numerow albo bledu brakujacej migracji. Dlatego pliki migracji maja jedna globalna numeracje:
+
+```text
+0001_create_horses.sql
+0002_create_inventory_items.sql
+```
+
+Moduly nadal posiadaja swoje adaptery persistence, ale globalny schemat bazy jest migrowany przez jeden migrator platformowy.
 
 ## Frontend
 
@@ -201,6 +210,29 @@ src/modules/horses/
 ```
 
 Lista, tworzenie i szczegoly powinny byc osobnymi widokami, nie jednym duzym ekranem.
+
+Ten sam uklad obowiazuje dla kolejnych modulow frontendu, np.:
+
+```text
+src/modules/inventory/
+  api/
+  components/
+  types/
+  utils/
+  views/
+```
+
+## Jezyk aplikacji
+
+Domyslnym jezykiem systemu jest polski.
+
+Zasady:
+
+- komunikaty walidacyjne sa po polsku,
+- ostrzezenia i bledy widoczne dla uzytkownika sa po polsku,
+- fallbacki dla nieoczekiwanych bledow w UI sa po polsku,
+- teksty techniczne z bibliotek moga zostac dolaczone jako szczegol bledu, ale komunikat aplikacji powinien miec polski kontekst,
+- pelna wielojezycznosc/i18n zostanie dodana dopiero wtedy, gdy faktycznie pojawi sie potrzeba innych lokalizacji.
 
 ## Dokumentacja
 

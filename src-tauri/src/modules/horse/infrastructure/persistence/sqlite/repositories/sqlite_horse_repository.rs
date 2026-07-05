@@ -63,7 +63,7 @@ impl HorseRepository for SqliteHorseRepository {
         .bind(profile.archived_at.as_deref())
         .execute(&self.pool)
         .await
-        .map_err(|error| format!("Could not save horse: {error}"))?;
+        .map_err(|error| format!("Nie udało się zapisać konia: {error}"))?;
 
         Ok(())
     }
@@ -91,7 +91,7 @@ impl HorseRepository for SqliteHorseRepository {
         .bind(id)
         .fetch_optional(&self.pool)
         .await
-        .map_err(|error| format!("Could not find horse: {error}"))?;
+        .map_err(|error| format!("Nie udało się pobrać konia: {error}"))?;
 
         Ok(row.map(HorseDetails::from))
     }
@@ -112,7 +112,7 @@ impl HorseRepository for SqliteHorseRepository {
         )
         .fetch_all(&self.pool)
         .await
-        .map_err(|error| format!("Could not list horses: {error}"))?;
+        .map_err(|error| format!("Nie udało się pobrać listy koni: {error}"))?;
 
         Ok(rows.into_iter().map(HorseSummary::from).collect())
     }

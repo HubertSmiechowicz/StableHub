@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
 import { Plus } from "@lucide/vue";
-import { listHorses } from "../api/horseApi";
-import HorseList from "../components/HorseList.vue";
-import type { HorseSummary } from "../types/horse";
+import { listInventoryItems } from "../api/inventoryApi";
+import InventoryItemList from "../components/InventoryItemList.vue";
+import type { InventoryItemSummary } from "../types/inventory";
 import { formatError } from "../../../shared/errors";
 
 const emit = defineEmits<{
@@ -11,7 +11,7 @@ const emit = defineEmits<{
   select: [id: string];
 }>();
 
-const horses = ref<HorseSummary[]>([]);
+const items = ref<InventoryItemSummary[]>([]);
 const isLoading = ref(false);
 const error = ref<string | null>(null);
 
@@ -20,9 +20,9 @@ async function load() {
   error.value = null;
 
   try {
-    horses.value = await listHorses();
+    items.value = await listInventoryItems();
   } catch (caught) {
-    error.value = formatError(caught, "Nie udało się pobrać listy koni.");
+    error.value = formatError(caught, "Nie udało się pobrać listy pozycji magazynowych.");
   } finally {
     isLoading.value = false;
   }
@@ -34,16 +34,16 @@ onMounted(load);
 <template>
   <section class="section-toolbar">
     <div>
-      <p class="eyebrow">Moduł koni</p>
-      <h2>Lista koni</h2>
+      <p class="eyebrow">Moduł magazynu</p>
+      <h2>Lista pozycji</h2>
     </div>
     <button class="secondary-action" type="button" @click="emit('create')">
       <Plus :size="17" aria-hidden="true" />
-      Dodaj konia
+      Dodaj pozycję
     </button>
   </section>
 
   <p v-if="error" class="error-message">{{ error }}</p>
 
-  <HorseList :horses="horses" :is-loading="isLoading" @select="emit('select', $event)" />
+  <InventoryItemList :items="items" :is-loading="isLoading" @select="emit('select', $event)" />
 </template>

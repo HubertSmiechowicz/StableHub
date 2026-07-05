@@ -6,17 +6,16 @@ use sqlx::{
 };
 use tauri::{AppHandle, Manager};
 
-static HORSE_MIGRATOR: sqlx::migrate::Migrator =
-    sqlx::migrate!("./src/modules/horse/infrastructure/persistence/sqlite/migrations");
+static MIGRATOR: sqlx::migrate::Migrator = sqlx::migrate!("./src/platform/sqlite/migrations");
 
 pub async fn connect(app: &AppHandle) -> Result<SqlitePool, String> {
     let app_data_dir = app
         .path()
         .app_data_dir()
-        .map_err(|error| format!("Could not resolve app data directory: {error}"))?;
+        .map_err(|error| format!("Nie udało się ustalić katalogu danych aplikacji: {error}"))?;
 
     fs::create_dir_all(&app_data_dir)
-        .map_err(|error| format!("Could not create app data directory: {error}"))?;
+        .map_err(|error| format!("Nie udało się utworzyć katalogu danych aplikacji: {error}"))?;
 
     let database_path = app_data_dir.join("stablehub.sqlite");
     let connection_options = SqliteConnectOptions::new()
@@ -27,12 +26,12 @@ pub async fn connect(app: &AppHandle) -> Result<SqlitePool, String> {
         .max_connections(5)
         .connect_with(connection_options)
         .await
-        .map_err(|error| format!("Could not open SQLite database: {error}"))?;
+        .map_err(|error| format!("Nie udało się otworzyć bazy SQLite: {error}"))?;
 
-    HORSE_MIGRATOR
+    MIGRATOR
         .run(&pool)
         .await
-        .map_err(|error| format!("Could not run SQLite migrations: {error}"))?;
+        .map_err(|error| format!("Nie udało się uruchomić migracji SQLite: {error}"))?;
 
     Ok(pool)
 }

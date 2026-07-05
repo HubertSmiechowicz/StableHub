@@ -80,3 +80,38 @@ Przykladowe podpowiedzi na start:
 - Rozwijac CQRS przez osobne commands i queries.
 - Aktualizowac README po kazdej istotnej decyzji architektonicznej.
 - Trzymac zasady architektury w `docs/architecture.md` jako zrodle prawdy.
+## Modul `inventory`
+
+### Pierwszy pion
+
+Ustalenie: modul magazynu ma od razu zarzadzac stanem, a nie byc tylko katalogiem pozycji.
+
+Pierwszy zakres:
+
+- [x] tworzenie pozycji magazynowej,
+- [x] lista pozycji magazynowych,
+- [x] szczegoly pozycji magazynowej,
+- [x] aktualny stan ilosciowy,
+- [x] jednostka miary,
+- [x] minimalny stan,
+- [x] srednie dzienne zuzycie,
+- [x] wyliczenie liczby dni zapasu w read modelu.
+- [x] blokada duplikatow aktywnych pozycji o tej samej nazwie i jednostce.
+
+### Do zaimplementowania pozniej
+
+- inwentaryzacja/korekta stanu magazynowego,
+- historia ruchow magazynowych,
+- przyjecie dostawy,
+- rejestracja zuzycia,
+- aktualizacja stanu istniejacej pozycji zamiast ponownego dodawania tej samej pozycji,
+- powiadomienia o niskim stanie magazynowym,
+- alerty na dashboardzie,
+- konfiguracja progow ostrzezen,
+- raport zuzycia siana, owsa i innych pozycji,
+- prognozowanie zuzycia siana, paszy i owsa na podstawie danych historycznych,
+- prognozowanie liczby dni zapasu na podstawie aktualnej liczebnosci stada,
+- planowanie zapasow na zime na podstawie historii zuzycia i liczby koni,
+- powiazanie kosztow zakupow z modulem `finance` bez mieszania odpowiedzialnosci modulow.
+
+Zasada domenowa: jesli operacja magazynowa dotyczy ilosci i moze naruszyc reguly, np. zejscie ponizej zera, to stan magazynowy powinien byc elementem domeny, a nie tylko polem DTO lub tabeli.

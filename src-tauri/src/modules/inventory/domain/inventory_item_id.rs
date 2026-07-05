@@ -1,0 +1,12 @@
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct InventoryItemId(String);
+
+impl InventoryItemId {
+    pub fn generate() -> Self {
+        Self(uuid::Uuid::new_v4().to_string())
+    }
+
+    pub fn as_str(&self) -> &str {
+        &self.0
+    }
+}

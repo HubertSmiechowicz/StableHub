@@ -5,6 +5,9 @@ mod state;
 use modules::horse::interfaces::tauri_commands::{
     create_horse, get_horse_details, list_horses,
 };
+use modules::inventory::interfaces::tauri_commands::{
+    create_inventory_item, get_inventory_item_details, list_inventory_items,
+};
 use state::AppState;
 use tauri::Manager;
 
@@ -19,8 +22,11 @@ pub fn run() {
         })
         .invoke_handler(tauri::generate_handler![
             create_horse,
+            create_inventory_item,
             get_horse_details,
-            list_horses
+            get_inventory_item_details,
+            list_horses,
+            list_inventory_items
         ])
         .run(tauri::generate_context!())
         .expect("error while running StableHub");

@@ -20,7 +20,7 @@ impl TryFrom<&str> for HorseStatus {
         match value {
             "active" => Ok(Self::Active),
             "archived" => Ok(Self::Archived),
-            other => Err(format!("Unsupported horse status: {other}")),
+            other => Err(format!("Nieobsługiwany status konia: {other}")),
         }
     }
 }
