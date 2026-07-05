@@ -1,0 +1,3 @@
+mod sqlite_health_event_repository;
+
+pub use sqlite_health_event_repository::SqliteHealthEventRepository;

@@ -80,6 +80,29 @@ Przykladowe podpowiedzi na start:
 - Rozwijac CQRS przez osobne commands i queries.
 - Aktualizowac README po kazdej istotnej decyzji architektonicznej.
 - Trzymac zasady architektury w `docs/architecture.md` jako zrodle prawdy.
+
+## Modul `health`
+
+### Pierwszy pion
+
+- [x] tworzenie zdarzenia zdrowotnego,
+- [x] lista zdarzen zdrowotnych,
+- [x] szczegoly zdarzenia zdrowotnego,
+- [x] edycja zdarzenia zdrowotnego,
+- [x] soft delete zdarzenia zdrowotnego,
+- [x] filtrowanie po koniu, typie i frazie tekstowej,
+- [x] sortowanie listy zdarzen,
+- [x] przypisanie zdarzenia do aktywnego konia.
+
+### Do zaimplementowania pozniej
+
+- przypomnienia o szczepieniach i odrobaczaniu,
+- cykliczne harmonogramy zdrowotne,
+- dokumenty i skany powiazane ze zdarzeniem,
+- powiazanie kosztow z modulem `finance`,
+- alerty zdrowotne na dashboardzie,
+- dedykowany widok historii zdrowia konkretnego konia,
+- automatyczne propozycje kolejnych terminow na podstawie typu zdarzenia.
 ## Modul `inventory`
 
 ### Pierwszy pion

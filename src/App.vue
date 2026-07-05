@@ -11,6 +11,10 @@ import {
   Warehouse
 } from "@lucide/vue";
 import DashboardView from "./modules/dashboard/views/DashboardView.vue";
+import HealthCreateView from "./modules/health/views/HealthCreateView.vue";
+import HealthDetailsView from "./modules/health/views/HealthDetailsView.vue";
+import HealthEditView from "./modules/health/views/HealthEditView.vue";
+import HealthListView from "./modules/health/views/HealthListView.vue";
 import HorseCreateView from "./modules/horses/views/HorseCreateView.vue";
 import HorseDetailsView from "./modules/horses/views/HorseDetailsView.vue";
 import HorseEditView from "./modules/horses/views/HorseEditView.vue";
@@ -33,12 +37,16 @@ type ViewId =
   | "finance"
   | "calendar"
   | "health"
+  | "health-create"
+  | "health-details"
+  | "health-edit"
   | "reports"
   | "settings";
 
 const currentView = ref<ViewId>("dashboard");
 const selectedHorseId = ref<string | null>(null);
 const selectedInventoryItemId = ref<string | null>(null);
+const selectedHealthEventId = ref<string | null>(null);
 
 const navItems = [
   { id: "dashboard" as const, label: "Dashboard", icon: Home },
@@ -75,6 +83,12 @@ const pageTitle = computed(() => {
       return "Kalendarz";
     case "health":
       return "Zdrowie";
+    case "health-create":
+      return "Nowe zdarzenie";
+    case "health-details":
+      return "Szczegóły zdarzenia";
+    case "health-edit":
+      return "Edytuj zdarzenie";
     case "reports":
       return "Raporty";
     case "settings":
@@ -105,6 +119,15 @@ const pageSubtitle = computed(() => {
     currentView.value === "inventory-edit"
   ) {
     return "Moduł magazynu";
+  }
+
+  if (
+    currentView.value === "health" ||
+    currentView.value === "health-create" ||
+    currentView.value === "health-details" ||
+    currentView.value === "health-edit"
+  ) {
+    return "Moduł zdrowia";
   }
 
   return "Moduł w przygotowaniu";
@@ -141,6 +164,20 @@ function openInventoryEdit(id: string) {
 function backToInventoryList() {
   currentView.value = "inventory";
 }
+
+function openHealthEventDetails(id: string) {
+  selectedHealthEventId.value = id;
+  currentView.value = "health-details";
+}
+
+function openHealthEventEdit(id: string) {
+  selectedHealthEventId.value = id;
+  currentView.value = "health-edit";
+}
+
+function backToHealthList() {
+  currentView.value = "health";
+}
 </script>
 
 <template>
@@ -169,7 +206,11 @@ function backToInventoryList() {
               (item.id === 'inventory' &&
                 (currentView === 'inventory-create' ||
                   currentView === 'inventory-details' ||
-                  currentView === 'inventory-edit'))
+                  currentView === 'inventory-edit')) ||
+              (item.id === 'health' &&
+                (currentView === 'health-create' ||
+                  currentView === 'health-details' ||
+                  currentView === 'health-edit'))
           }"
           type="button"
           @click="selectView(item.id)"
@@ -232,6 +273,28 @@ function backToInventoryList() {
         :item-id="selectedInventoryItemId"
         @saved="openInventoryDetails"
         @cancel="openInventoryDetails(selectedInventoryItemId)"
+      />
+      <HealthListView
+        v-else-if="currentView === 'health'"
+        @create="currentView = 'health-create'"
+        @select="openHealthEventDetails"
+      />
+      <HealthCreateView
+        v-else-if="currentView === 'health-create'"
+        @created="openHealthEventDetails"
+        @cancel="backToHealthList"
+      />
+      <HealthDetailsView
+        v-else-if="currentView === 'health-details' && selectedHealthEventId"
+        :event-id="selectedHealthEventId"
+        @back="backToHealthList"
+        @edit="openHealthEventEdit"
+      />
+      <HealthEditView
+        v-else-if="currentView === 'health-edit' && selectedHealthEventId"
+        :event-id="selectedHealthEventId"
+        @saved="openHealthEventDetails"
+        @cancel="openHealthEventDetails(selectedHealthEventId)"
       />
       <section v-else class="panel empty-state">
         <h2>{{ pageTitle }}</h2>

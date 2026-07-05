@@ -91,6 +91,8 @@ Horse
 
 Pola takie jak rasa, masc, notatki, data utworzenia i identyfikatory dokumentow moga istniec w bazie i UI, ale nie musza byc polami encji domenowej, dopoki nie uczestnicza w regule domenowej.
 
+Relacje miedzy modulami powinny byc utrzymywane przez identyfikatory i przypadki uzycia, a nie przez mieszanie domen. Przyklad: `health` przechowuje `horse_id` zdarzenia zdrowotnego, ale nie wlacza encji `Horse` do swojej domeny.
+
 ## Application
 
 Warstwa application zawiera:

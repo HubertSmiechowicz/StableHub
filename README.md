@@ -17,6 +17,7 @@ Obecnie istnieje:
 - przygotowane zależności pod lokalną bazę SQLite przez SQLx,
 - podstawowy moduł `horse`: tworzenie, edycja, soft delete, lista, filtrowanie, sortowanie i szczegóły,
 - podstawowy moduł `inventory`: tworzenie, edycja, soft delete, lista, filtrowanie, sortowanie i szczegóły,
+- podstawowy moduł `health`: zdarzenia zdrowotne koni, edycja, soft delete, lista, filtrowanie, sortowanie i szczegóły,
 - podstawowa konfiguracja buildów desktopowych.
 
 ## Założenia produktu
@@ -202,24 +203,22 @@ Pierwsza implementacja modułu `inventory` obejmuje podstawowy magazyn stajni:
 
 Na tym etapie moduł nie ma jeszcze historii ruchów magazynowych, inwentaryzacji ani alertów niskiego stanu. Te elementy są zapisane w `docs/TODO.md`.
 
-Aktualna tabela:
+## Moduł `health`
 
-```sql
-CREATE TABLE IF NOT EXISTS horses (
-    id TEXT PRIMARY KEY,
-    name TEXT NOT NULL,
-    sex TEXT NULL,
-    breed TEXT NULL,
-    date_of_birth TEXT NULL,
-    coat_color TEXT NULL,
-    identification_number TEXT NULL,
-    notes TEXT NULL,
-    status TEXT NOT NULL,
-    created_at TEXT NOT NULL,
-    updated_at TEXT NOT NULL,
-    archived_at TEXT NULL
-);
-```
+Pierwsza implementacja modułu `health` obejmuje rejestr zdarzeń zdrowotnych koni:
+
+- utworzenie zdarzenia przez command `CreateHealthEvent`,
+- edycję zdarzenia przez command `UpdateHealthEvent`,
+- soft delete przez command `ArchiveHealthEvent`,
+- pobranie aktywnych zdarzeń przez query `ListHealthEvents`,
+- filtrowanie po koniu, typie i frazie tekstowej,
+- sortowanie po dacie, tytule, typie, koniu i dacie dodania,
+- pobranie szczegółów przez query `GetHealthEventDetails`,
+- zapis lokalny w SQLite,
+- migrację tabeli `health_events`,
+- osobne widoki listy, dodawania, edycji i szczegółów w UI.
+
+Zdarzenie zdrowotne przechowuje `horse_id`, ale moduł `health` pozostaje osobnym modułem. Formularz korzysta z listy aktywnych koni, a domena zdrowia waliduje własne reguły zdarzenia.
 
 ## Uruchamianie projektu
 

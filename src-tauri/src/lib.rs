@@ -2,6 +2,10 @@ mod modules;
 mod platform;
 mod state;
 
+use modules::health::interfaces::tauri_commands::{
+    archive_health_event, create_health_event, get_health_event_details, list_health_events,
+    update_health_event,
+};
 use modules::horse::interfaces::tauri_commands::{
     archive_horse, create_horse, get_horse_details, list_horses, update_horse,
 };
@@ -22,14 +26,19 @@ pub fn run() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
+            archive_health_event,
             archive_horse,
             archive_inventory_item,
+            create_health_event,
             create_horse,
             create_inventory_item,
+            get_health_event_details,
             get_horse_details,
             get_inventory_item_details,
+            list_health_events,
             list_horses,
             list_inventory_items,
+            update_health_event,
             update_horse,
             update_inventory_item
         ])
