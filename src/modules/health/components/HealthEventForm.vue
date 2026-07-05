@@ -4,16 +4,20 @@ import { HeartPulse } from "@lucide/vue";
 import type { HorseSummary } from "../../horses/types/horse";
 import type { CreateHealthEventRequest, HealthEventDetails } from "../types/health";
 import { healthEventTypeOptions } from "../utils/healthLabels";
+import DatePickerField from "../../../shared/components/DatePickerField.vue";
+import TimePickerField from "../../../shared/components/TimePickerField.vue";
 
 const props = withDefaults(
   defineProps<{
     event?: HealthEventDetails | null;
     horses: HorseSummary[];
+    initialDate?: string | null;
     title?: string;
     submitLabel?: string;
   }>(),
   {
     event: null,
+    initialDate: null,
     title: "Nowe zdarzenie zdrowotne",
     submitLabel: "Zapisz zdarzenie"
   }
@@ -28,17 +32,19 @@ const form = reactive({
   horse_id: "",
   event_type: "checkup",
   occurred_on: "",
+  occurred_time: "",
   title: "",
   notes: "",
   cost: null as number | null
 });
 
 watch(
-  () => props.event,
-  (event) => {
+  () => [props.event, props.initialDate] as const,
+  ([event, initialDate]) => {
     form.horse_id = event?.horse_id ?? props.horses[0]?.id ?? "";
     form.event_type = event?.event_type ?? "checkup";
-    form.occurred_on = event?.occurred_on ?? "";
+    form.occurred_on = event?.occurred_on ?? initialDate ?? "";
+    form.occurred_time = event?.occurred_time ?? "";
     form.title = event?.title ?? "";
     form.notes = event?.notes ?? "";
     form.cost = event?.cost ?? null;
@@ -61,6 +67,7 @@ function submitForm() {
     horse_id: form.horse_id,
     event_type: form.event_type,
     occurred_on: form.occurred_on,
+    occurred_time: form.occurred_time || null,
     title: form.title,
     notes: form.notes || null,
     cost: form.cost === null ? null : Number(form.cost)
@@ -97,10 +104,8 @@ function submitForm() {
           </option>
         </select>
       </label>
-      <label>
-        <span>Data</span>
-        <input v-model="form.occurred_on" type="date" required />
-      </label>
+      <DatePickerField v-model="form.occurred_on" label="Data" required />
+      <TimePickerField v-model="form.occurred_time" label="Godzina" />
       <label>
         <span>Tytuł</span>
         <input v-model="form.title" type="text" maxlength="120" required />

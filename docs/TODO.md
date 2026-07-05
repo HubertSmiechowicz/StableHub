@@ -93,6 +93,7 @@ Przykladowe podpowiedzi na start:
 - [x] filtrowanie po koniu, typie i frazie tekstowej,
 - [x] sortowanie listy zdarzen,
 - [x] przypisanie zdarzenia do aktywnego konia.
+- [x] opcjonalna godzina zdarzenia widoczna w kalendarzu.
 
 ### Do zaimplementowania pozniej
 
@@ -103,6 +104,30 @@ Przykladowe podpowiedzi na start:
 - alerty zdrowotne na dashboardzie,
 - dedykowany widok historii zdrowia konkretnego konia,
 - automatyczne propozycje kolejnych terminow na podstawie typu zdarzenia.
+
+## Modul `calendar`
+
+### Pierwszy pion
+
+- [x] reczne wpisy terminarza,
+- [x] miesieczny widok kalendarza,
+- [x] szczegoly recznego wpisu,
+- [x] edycja recznego wpisu,
+- [x] soft delete recznego wpisu,
+- [x] sortowanie listy terminarza,
+- [x] pokazywanie aktywnych zdarzen z modulu `health` w terminarzu.
+- [x] sortowanie zdarzen w dniu wedlug godziny.
+- [x] klikniecie dnia otwiera dodawanie recznego wpisu z wybrana data.
+- [x] z formularza wpisu terminarza mozna przejsc do dodawania zdarzenia zdrowotnego z ta sama data.
+
+### Do zaimplementowania pozniej
+
+- widok tygodnia/dnia,
+- oznaczanie wpisow zdrowotnych jako wykonane z poziomu kalendarza przez command modulu `health`,
+- cykliczne wydarzenia,
+- przypomnienia i powiadomienia,
+- wpisy terminarza generowane z kolejnych modulow, np. `finance` i `inventory`,
+- zakres "nadchodzace 7 dni" na dashboardzie.
 ## Modul `inventory`
 
 ### Pierwszy pion

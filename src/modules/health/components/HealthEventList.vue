@@ -34,7 +34,9 @@ const emit = defineEmits<{
         <div>
           <strong>{{ event.title }}</strong>
           <p>
-            {{ event.occurred_on }} · {{ event.horse_name || "koń nieznany" }} ·
+            {{ event.occurred_on }}
+            <template v-if="event.occurred_time"> · {{ event.occurred_time }}</template>
+            · {{ event.horse_name || "koń nieznany" }} ·
             {{ healthEventTypeLabel(event.event_type) }}
           </p>
         </div>

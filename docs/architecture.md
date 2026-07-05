@@ -93,6 +93,8 @@ Pola takie jak rasa, masc, notatki, data utworzenia i identyfikatory dokumentow 
 
 Relacje miedzy modulami powinny byc utrzymywane przez identyfikatory i przypadki uzycia, a nie przez mieszanie domen. Przyklad: `health` przechowuje `horse_id` zdarzenia zdrowotnego, ale nie wlacza encji `Horse` do swojej domeny.
 
+Modul moze agregowac read modele z innych modulow, jesli jego odpowiedzialnosc tego wymaga. Przyklad: `calendar` pokazuje w terminarzu wlasne wpisy oraz aktywne zdarzenia z `health`, ale nie przejmuje ich wlascicielstwa. Wpis zdrowotny nadal jest edytowany w module `health`.
+
 ## Application
 
 Warstwa application zawiera:

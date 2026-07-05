@@ -2,6 +2,10 @@ mod modules;
 mod platform;
 mod state;
 
+use modules::calendar::interfaces::tauri_commands::{
+    archive_calendar_entry, create_calendar_entry, get_calendar_entry_details, list_calendar_items,
+    update_calendar_entry,
+};
 use modules::health::interfaces::tauri_commands::{
     archive_health_event, create_health_event, get_health_event_details, list_health_events,
     update_health_event,
@@ -26,18 +30,23 @@ pub fn run() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
+            archive_calendar_entry,
             archive_health_event,
             archive_horse,
             archive_inventory_item,
+            create_calendar_entry,
             create_health_event,
             create_horse,
             create_inventory_item,
+            get_calendar_entry_details,
             get_health_event_details,
             get_horse_details,
             get_inventory_item_details,
+            list_calendar_items,
             list_health_events,
             list_horses,
             list_inventory_items,
+            update_calendar_entry,
             update_health_event,
             update_horse,
             update_inventory_item

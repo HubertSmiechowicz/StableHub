@@ -10,6 +10,10 @@ import {
   Sprout,
   Warehouse
 } from "@lucide/vue";
+import CalendarCreateView from "./modules/calendar/views/CalendarCreateView.vue";
+import CalendarDetailsView from "./modules/calendar/views/CalendarDetailsView.vue";
+import CalendarEditView from "./modules/calendar/views/CalendarEditView.vue";
+import CalendarListView from "./modules/calendar/views/CalendarListView.vue";
 import DashboardView from "./modules/dashboard/views/DashboardView.vue";
 import HealthCreateView from "./modules/health/views/HealthCreateView.vue";
 import HealthDetailsView from "./modules/health/views/HealthDetailsView.vue";
@@ -36,6 +40,9 @@ type ViewId =
   | "inventory-edit"
   | "finance"
   | "calendar"
+  | "calendar-create"
+  | "calendar-details"
+  | "calendar-edit"
   | "health"
   | "health-create"
   | "health-details"
@@ -47,6 +54,9 @@ const currentView = ref<ViewId>("dashboard");
 const selectedHorseId = ref<string | null>(null);
 const selectedInventoryItemId = ref<string | null>(null);
 const selectedHealthEventId = ref<string | null>(null);
+const selectedCalendarEntryId = ref<string | null>(null);
+const selectedCalendarDate = ref<string | null>(null);
+const selectedHealthEventDate = ref<string | null>(null);
 
 const navItems = [
   { id: "dashboard" as const, label: "Dashboard", icon: Home },
@@ -77,10 +87,16 @@ const pageTitle = computed(() => {
       return "Szczegóły pozycji";
     case "inventory-edit":
       return "Edytuj pozycję";
-    case "finance":
-      return "Finanse";
     case "calendar":
       return "Kalendarz";
+    case "calendar-create":
+      return "Nowy wpis";
+    case "calendar-details":
+      return "Szczegóły wpisu";
+    case "calendar-edit":
+      return "Edytuj wpis";
+    case "finance":
+      return "Finanse";
     case "health":
       return "Zdrowie";
     case "health-create":
@@ -119,6 +135,15 @@ const pageSubtitle = computed(() => {
     currentView.value === "inventory-edit"
   ) {
     return "Moduł magazynu";
+  }
+
+  if (
+    currentView.value === "calendar" ||
+    currentView.value === "calendar-create" ||
+    currentView.value === "calendar-details" ||
+    currentView.value === "calendar-edit"
+  ) {
+    return "Moduł kalendarza";
   }
 
   if (
@@ -178,6 +203,30 @@ function openHealthEventEdit(id: string) {
 function backToHealthList() {
   currentView.value = "health";
 }
+
+function openHealthCreate(date: string | null = null) {
+  selectedHealthEventDate.value = date;
+  currentView.value = "health-create";
+}
+
+function openCalendarEntryDetails(id: string) {
+  selectedCalendarEntryId.value = id;
+  currentView.value = "calendar-details";
+}
+
+function openCalendarEntryEdit(id: string) {
+  selectedCalendarEntryId.value = id;
+  currentView.value = "calendar-edit";
+}
+
+function backToCalendarList() {
+  currentView.value = "calendar";
+}
+
+function openCalendarCreate(date: string | null = null) {
+  selectedCalendarDate.value = date;
+  currentView.value = "calendar-create";
+}
 </script>
 
 <template>
@@ -207,6 +256,10 @@ function backToHealthList() {
                 (currentView === 'inventory-create' ||
                   currentView === 'inventory-details' ||
                   currentView === 'inventory-edit')) ||
+              (item.id === 'calendar' &&
+                (currentView === 'calendar-create' ||
+                  currentView === 'calendar-details' ||
+                  currentView === 'calendar-edit')) ||
               (item.id === 'health' &&
                 (currentView === 'health-create' ||
                   currentView === 'health-details' ||
@@ -274,13 +327,40 @@ function backToHealthList() {
         @saved="openInventoryDetails"
         @cancel="openInventoryDetails(selectedInventoryItemId)"
       />
+      <CalendarListView
+        v-else-if="currentView === 'calendar'"
+        @create="openCalendarCreate()"
+        @create-for-date="openCalendarCreate"
+        @select-calendar-entry="openCalendarEntryDetails"
+        @select-health-event="openHealthEventDetails"
+      />
+      <CalendarCreateView
+        v-else-if="currentView === 'calendar-create'"
+        :initial-date="selectedCalendarDate"
+        @created="openCalendarEntryDetails"
+        @cancel="backToCalendarList"
+        @create-health-event="openHealthCreate"
+      />
+      <CalendarDetailsView
+        v-else-if="currentView === 'calendar-details' && selectedCalendarEntryId"
+        :entry-id="selectedCalendarEntryId"
+        @back="backToCalendarList"
+        @edit="openCalendarEntryEdit"
+      />
+      <CalendarEditView
+        v-else-if="currentView === 'calendar-edit' && selectedCalendarEntryId"
+        :entry-id="selectedCalendarEntryId"
+        @saved="openCalendarEntryDetails"
+        @cancel="openCalendarEntryDetails(selectedCalendarEntryId)"
+      />
       <HealthListView
         v-else-if="currentView === 'health'"
-        @create="currentView = 'health-create'"
+        @create="openHealthCreate()"
         @select="openHealthEventDetails"
       />
       <HealthCreateView
         v-else-if="currentView === 'health-create'"
+        :initial-date="selectedHealthEventDate"
         @created="openHealthEventDetails"
         @cancel="backToHealthList"
       />

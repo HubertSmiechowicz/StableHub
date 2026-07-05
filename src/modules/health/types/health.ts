@@ -4,6 +4,7 @@ export type HealthEventSummary = {
   horse_name: string | null;
   event_type: string;
   occurred_on: string;
+  occurred_time: string | null;
   title: string;
   cost: number | null;
   status: string;
@@ -20,6 +21,7 @@ export type CreateHealthEventRequest = {
   horse_id: string;
   event_type: string;
   occurred_on: string;
+  occurred_time: string | null;
   title: string;
   notes: string | null;
   cost: number | null;

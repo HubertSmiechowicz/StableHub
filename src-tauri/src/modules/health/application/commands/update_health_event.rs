@@ -10,6 +10,7 @@ pub struct UpdateHealthEventCommand {
     pub horse_id: String,
     pub event_type: String,
     pub occurred_on: String,
+    pub occurred_time: Option<String>,
     pub title: String,
     pub notes: Option<String>,
     pub cost: Option<f64>,
@@ -63,6 +64,7 @@ where
         profile
             .event
             .update(horse_id, event_type, occurred_on, title);
+        profile.occurred_time = normalize_optional(command.occurred_time);
         profile.notes = command.notes;
         profile.cost = normalize_non_negative(command.cost)?;
         profile.updated_at = current_timestamp();
@@ -82,6 +84,12 @@ fn normalize_non_negative(value: Option<f64>) -> Result<Option<f64>, String> {
         Some(value) if value == 0.0 => Ok(None),
         other => Ok(other),
     }
+}
+
+fn normalize_optional(value: Option<String>) -> Option<String> {
+    value
+        .map(|value| value.trim().to_string())
+        .filter(|value| !value.is_empty())
 }
 
 fn current_timestamp() -> String {

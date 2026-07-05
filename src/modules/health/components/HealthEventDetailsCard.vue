@@ -47,6 +47,10 @@ const emit = defineEmits<{
           <dd>{{ event.occurred_on }}</dd>
         </div>
         <div>
+          <dt>Godzina</dt>
+          <dd>{{ displayValue(event.occurred_time) }}</dd>
+        </div>
+        <div>
           <dt>Typ</dt>
           <dd>{{ healthEventTypeLabel(event.event_type) }}</dd>
         </div>

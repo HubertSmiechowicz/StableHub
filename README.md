@@ -18,6 +18,7 @@ Obecnie istnieje:
 - podstawowy moduł `horse`: tworzenie, edycja, soft delete, lista, filtrowanie, sortowanie i szczegóły,
 - podstawowy moduł `inventory`: tworzenie, edycja, soft delete, lista, filtrowanie, sortowanie i szczegóły,
 - podstawowy moduł `health`: zdarzenia zdrowotne koni, edycja, soft delete, lista, filtrowanie, sortowanie i szczegóły,
+- podstawowy moduł `calendar`: ręczne wpisy terminarza oraz widok zdarzeń z `health`,
 - podstawowa konfiguracja buildów desktopowych.
 
 ## Założenia produktu
@@ -213,12 +214,29 @@ Pierwsza implementacja modułu `health` obejmuje rejestr zdarzeń zdrowotnych ko
 - pobranie aktywnych zdarzeń przez query `ListHealthEvents`,
 - filtrowanie po koniu, typie i frazie tekstowej,
 - sortowanie po dacie, tytule, typie, koniu i dacie dodania,
+- opcjonalną godzinę zdarzenia używaną przez kalendarz,
 - pobranie szczegółów przez query `GetHealthEventDetails`,
 - zapis lokalny w SQLite,
 - migrację tabeli `health_events`,
 - osobne widoki listy, dodawania, edycji i szczegółów w UI.
 
 Zdarzenie zdrowotne przechowuje `horse_id`, ale moduł `health` pozostaje osobnym modułem. Formularz korzysta z listy aktywnych koni, a domena zdrowia waliduje własne reguły zdarzenia.
+
+## Moduł `calendar`
+
+Pierwsza implementacja modułu `calendar` obejmuje terminarz, który agreguje terminy z różnych źródeł:
+
+- ręczne wpisy kalendarza zapisywane w tabeli `calendar_entries`,
+- aktywne zdarzenia zdrowotne z tabeli `health_events`,
+- wspólny read model listy z polami `source_module` i `source_id`,
+- miesięczny widok kalendarza z wpisami osadzonymi w dniach,
+- sortowanie wpisów w dniu według godziny,
+- kliknięcie dnia otwiera formularz ręcznego wpisu z wybraną datą,
+- formularz ręcznego wpisu pozwala przejść do dodawania zdarzenia zdrowotnego z tą samą datą,
+- tworzenie, edycję, szczegóły i soft delete ręcznych wpisów,
+- kliknięcie wpisu z `health` otwiera szczegóły zdarzenia zdrowotnego, a nie kopię w kalendarzu.
+
+Kalendarz jest właścicielem tylko ręcznych wpisów. Dane pochodzące z innych modułów pozostają własnością tych modułów.
 
 ## Uruchamianie projektu
 

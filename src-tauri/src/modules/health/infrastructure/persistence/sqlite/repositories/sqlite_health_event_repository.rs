@@ -32,6 +32,7 @@ impl HealthEventRepository for SqliteHealthEventRepository {
                 horse_id,
                 event_type,
                 occurred_on,
+                occurred_time,
                 title,
                 notes,
                 cost,
@@ -40,11 +41,12 @@ impl HealthEventRepository for SqliteHealthEventRepository {
                 updated_at,
                 archived_at
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(id) DO UPDATE SET
                 horse_id = excluded.horse_id,
                 event_type = excluded.event_type,
                 occurred_on = excluded.occurred_on,
+                occurred_time = excluded.occurred_time,
                 title = excluded.title,
                 notes = excluded.notes,
                 cost = excluded.cost,
@@ -57,6 +59,7 @@ impl HealthEventRepository for SqliteHealthEventRepository {
         .bind(profile.event.horse_id().as_str())
         .bind(profile.event.event_type().as_str())
         .bind(profile.event.occurred_on().as_str())
+        .bind(profile.occurred_time.as_deref())
         .bind(profile.event.title().as_str())
         .bind(profile.notes.as_deref())
         .bind(profile.cost)
@@ -79,6 +82,7 @@ impl HealthEventRepository for SqliteHealthEventRepository {
                 health_events.horse_id,
                 health_events.event_type,
                 health_events.occurred_on,
+                health_events.occurred_time,
                 health_events.title,
                 health_events.notes,
                 health_events.cost,
@@ -107,6 +111,7 @@ impl HealthEventRepository for SqliteHealthEventRepository {
                 horses.name AS horse_name,
                 health_events.event_type,
                 health_events.occurred_on,
+                health_events.occurred_time,
                 health_events.title,
                 health_events.notes,
                 health_events.cost,
@@ -150,6 +155,7 @@ impl HealthEventRepository for SqliteHealthEventRepository {
                 horses.name AS horse_name,
                 health_events.event_type,
                 health_events.occurred_on,
+                health_events.occurred_time,
                 health_events.title,
                 health_events.cost,
                 health_events.status
@@ -206,6 +212,7 @@ struct HealthEventSummaryRow {
     horse_name: Option<String>,
     event_type: String,
     occurred_on: String,
+    occurred_time: Option<String>,
     title: String,
     cost: Option<f64>,
     status: String,
@@ -219,6 +226,7 @@ impl From<HealthEventSummaryRow> for HealthEventSummary {
             horse_name: row.horse_name,
             event_type: row.event_type,
             occurred_on: row.occurred_on,
+            occurred_time: row.occurred_time,
             title: row.title,
             cost: row.cost,
             status: row.status,
@@ -233,6 +241,7 @@ struct HealthEventDetailsRow {
     horse_name: Option<String>,
     event_type: String,
     occurred_on: String,
+    occurred_time: Option<String>,
     title: String,
     notes: Option<String>,
     cost: Option<f64>,
@@ -250,6 +259,7 @@ impl From<HealthEventDetailsRow> for HealthEventDetails {
             horse_name: row.horse_name,
             event_type: row.event_type,
             occurred_on: row.occurred_on,
+            occurred_time: row.occurred_time,
             title: row.title,
             notes: row.notes,
             cost: row.cost,
@@ -267,6 +277,7 @@ struct HealthEventProfileRow {
     horse_id: String,
     event_type: String,
     occurred_on: String,
+    occurred_time: Option<String>,
     title: String,
     notes: Option<String>,
     cost: Option<f64>,
@@ -292,6 +303,7 @@ impl TryFrom<HealthEventProfileRow> for HealthEventProfileData {
 
         Ok(Self {
             event,
+            occurred_time: row.occurred_time,
             notes: row.notes,
             cost: row.cost,
             created_at: row.created_at,

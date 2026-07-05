@@ -7,6 +7,10 @@ import HealthEventForm from "../components/HealthEventForm.vue";
 import type { CreateHealthEventRequest } from "../types/health";
 import { formatError } from "../../../shared/errors";
 
+const props = defineProps<{
+  initialDate: string | null;
+}>();
+
 const emit = defineEmits<{
   created: [id: string];
   cancel: [];
@@ -59,6 +63,7 @@ onMounted(loadHorses);
   <HealthEventForm
     v-else
     :horses="horses"
+    :initial-date="props.initialDate"
     @submit="submit"
     @cancel="emit('cancel')"
   />
