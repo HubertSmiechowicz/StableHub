@@ -79,3 +79,4 @@ Przykladowe podpowiedzi na start:
 - Nie mieszac SQLx ani SQLite z warstwa `application` lub `domain`.
 - Rozwijac CQRS przez osobne commands i queries.
 - Aktualizowac README po kazdej istotnej decyzji architektonicznej.
+- Trzymac zasady architektury w `docs/architecture.md` jako zrodle prawdy.

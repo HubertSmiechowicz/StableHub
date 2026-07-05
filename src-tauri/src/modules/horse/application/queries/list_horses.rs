@@ -18,7 +18,6 @@ where
     }
 
     pub async fn handle(&self, _query: ListHorsesQuery) -> Result<Vec<HorseSummary>, String> {
-        let horses = self.repository.list_active().await?;
-        Ok(horses.into_iter().map(HorseSummary::from).collect())
+        self.repository.list_active_summaries().await
     }
 }

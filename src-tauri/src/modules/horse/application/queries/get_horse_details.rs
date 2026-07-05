@@ -20,12 +20,10 @@ where
     }
 
     pub async fn handle(&self, query: GetHorseDetailsQuery) -> Result<HorseDetails, String> {
-        let horse = self
+        self
             .repository
-            .find_by_id(&query.id)
+            .find_details_by_id(&query.id)
             .await?
-            .ok_or_else(|| "Horse was not found".to_string())?;
-
-        Ok(HorseDetails::from(horse))
+            .ok_or_else(|| "Horse was not found".to_string())
     }
 }

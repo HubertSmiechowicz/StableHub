@@ -1,10 +1,10 @@
 use async_trait::async_trait;
 
-use crate::modules::horse::domain::Horse;
+use crate::modules::horse::application::dto::{HorseDetails, HorseProfileData, HorseSummary};
 
 #[async_trait]
 pub trait HorseRepository {
-    async fn save(&self, horse: &Horse) -> Result<(), String>;
-    async fn find_by_id(&self, id: &str) -> Result<Option<Horse>, String>;
-    async fn list_active(&self) -> Result<Vec<Horse>, String>;
+    async fn save_profile(&self, profile: &HorseProfileData) -> Result<(), String>;
+    async fn find_details_by_id(&self, id: &str) -> Result<Option<HorseDetails>, String>;
+    async fn list_active_summaries(&self) -> Result<Vec<HorseSummary>, String>;
 }

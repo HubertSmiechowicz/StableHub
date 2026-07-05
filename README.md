@@ -240,6 +240,8 @@ README powinno być aktualizowane systematycznie razem ze zmianami architektury,
 
 Bieżące ustalenia i rzeczy do zrobienia są zbierane w `docs/TODO.md`.
 
+Zasady techniczne i architektoniczne są opisane w `docs/architecture.md`.
+
 ## Repozytorium
 
 Repozytorium GitHub: <https://github.com/HubertSmiechowicz/StableHub.git>
