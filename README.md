@@ -15,6 +15,7 @@ Obecnie istnieje:
 - ekran powitalny StableHub,
 - przygotowana struktura backendu pod DDD i Modular Monolith,
 - przygotowane zależności pod lokalną bazę SQLite przez SQLx,
+- pierwszy pion modułu `horse`: `CreateHorse` i `ListHorses`,
 - podstawowa konfiguracja buildów desktopowych.
 
 ## Założenia produktu
@@ -75,6 +76,8 @@ Architektura:
 
 - Domain Driven Design,
 - Modular Monolith,
+- Ports & Adapters,
+- CQRS,
 - moduły jako główne granice odpowiedzialności,
 - warstwy wewnątrz modułów.
 
@@ -107,6 +110,88 @@ Aktualne moduły:
 - `stable`.
 
 Katalog `src-tauri/src/platform/sqlite` jest miejscem na przyszłą techniczną obsługę SQLite: ścieżkę pliku bazy, connection pool i uruchamianie migracji.
+
+## Przepływ danych
+
+StableHub respektuje kierunek zależności typowy dla DDD, Ports & Adapters i CQRS:
+
+```text
+Vue
+  -> Tauri command DTO
+  -> application command/query
+  -> use case / handler
+  -> domain model
+  -> repository port
+  -> SQLite adapter
+  -> SQLite
+```
+
+Zasady:
+
+- frontend nie operuje bezpośrednio na encjach domenowych,
+- Tauri commands są adapterem wejściowym i nie zawierają logiki biznesowej,
+- `application` definiuje komendy, query, use case'y i porty,
+- `domain` zawiera reguły domenowe i nie zna Tauri, SQLite ani DTO,
+- `infrastructure` implementuje porty i zna szczegóły SQLx/SQLite,
+- command zmienia stan,
+- query czyta dane i zwraca DTO/read model dla UI.
+
+## Moduł `horse`
+
+Pierwsza implementacja modułu `horse` obejmuje podstawowy rejestr koni:
+
+- utworzenie konia przez command `CreateHorse`,
+- pobranie aktywnych koni przez query `ListHorses`,
+- pobranie szczegółów konia przez query `GetHorseDetails`,
+- zapis lokalny w SQLite,
+- migrację tabeli `horses`,
+- osobną zakładkę `Konie` w UI,
+- przycisk `Dodaj konia`, który otwiera formularz w module koni,
+- kliknięcie pozycji na liście koni, które otwiera osobny widok szczegółów.
+
+Na tym etapie moduł zawiera tylko podstawowe dane profilu. Docelowo profil konia powinien zostać rozszerzony o dane spójne z paszportem konia, zdjęcia, skany paszportu i inne dokumenty, ale te elementy powinny być dodawane etapami, bez mieszania ich z pierwszym prostym pionem domenowym.
+
+Dashboard nie służy do zarządzania encjami. Docelowo ma prezentować bieżące dane, powiadomienia, alerty magazynowe, przypomnienia i skróty do działań wymagających reakcji. Zarządzanie końmi odbywa się w module `Konie`.
+
+Frontend również jest organizowany modułowo. `App.vue` pełni rolę lekkiego shella aplikacji i przełącza widoki, a właściwe ekrany znajdują się w modułach:
+
+```text
+src/modules/dashboard/views/DashboardView.vue
+
+src/modules/horses/
+  api/
+  components/
+  types/
+  utils/
+  views/
+```
+
+Moduł `horses` ma oddzielne widoki dla listy, dodawania i szczegółów konia:
+
+```text
+HorsesListView
+HorseCreateView
+HorseDetailsView
+```
+
+Aktualna tabela:
+
+```sql
+CREATE TABLE IF NOT EXISTS horses (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    sex TEXT NULL,
+    breed TEXT NULL,
+    date_of_birth TEXT NULL,
+    coat_color TEXT NULL,
+    identification_number TEXT NULL,
+    notes TEXT NULL,
+    status TEXT NOT NULL,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL,
+    archived_at TEXT NULL
+);
+```
 
 ## Uruchamianie projektu
 
@@ -153,6 +238,8 @@ Dokumenty produktowe znajdują się w katalogu `docs/`.
 
 README powinno być aktualizowane systematycznie razem ze zmianami architektury, sposobu uruchamiania, modułów i decyzji projektowych. Ten plik ma być bieżącą dokumentacją projektu, a nie tylko opisem startowym.
 
+Bieżące ustalenia i rzeczy do zrobienia są zbierane w `docs/TODO.md`.
+
 ## Repozytorium
 
-Projekt jest przygotowywany do pracy w Git i późniejszego podpięcia pod GitHub.
+Repozytorium GitHub: <https://github.com/HubertSmiechowicz/StableHub.git>

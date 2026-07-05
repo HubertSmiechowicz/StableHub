@@ -21,7 +21,8 @@ body {
 }
 
 button,
-input {
+input,
+select {
   font: inherit;
 }
 
@@ -125,7 +126,8 @@ input {
 
 .topbar,
 .panel-heading,
-.snapshot-header {
+.snapshot-header,
+.section-toolbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -309,6 +311,217 @@ h1 {
   color: #dbe1e7;
 }
 
+.horse-form {
+  display: grid;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.horse-form label {
+  display: grid;
+  gap: 6px;
+  color: #c9d1d9;
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.horse-form input,
+.horse-form select {
+  width: 100%;
+  min-height: 40px;
+  padding: 0 10px;
+  border: 1px solid #313941;
+  border-radius: 8px;
+  background: #0f1216;
+  color: #f6f7f9;
+}
+
+.horse-form input:focus,
+.horse-form select:focus {
+  border-color: #72d68c;
+  outline: 0;
+}
+
+.secondary-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid #365d43;
+  border-radius: 8px;
+  background: #18261d;
+  color: #d8f9df;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.ghost-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid #313941;
+  border-radius: 8px;
+  background: transparent;
+  color: #c8ced6;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.section-toolbar {
+  min-height: 72px;
+  padding: 18px 20px;
+  border: 1px solid #283034;
+  border-radius: 8px;
+  background: rgba(18, 21, 25, 0.92);
+}
+
+.section-toolbar h2 {
+  margin-top: 4px;
+}
+
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.horse-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.horse-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  min-height: 58px;
+  padding: 12px;
+  border: 1px solid #283034;
+  border-radius: 8px;
+  background: #15191e;
+  color: #f6f7f9;
+  text-align: left;
+  cursor: pointer;
+}
+
+.horse-row:hover,
+.horse-row.selected {
+  border-color: #4c9660;
+  background: #18261d;
+}
+
+.horse-row p,
+.muted,
+.error-message {
+  margin: 0;
+}
+
+.horse-row p,
+.muted {
+  color: #a4acb5;
+}
+
+.horse-row span {
+  color: #8df3a7;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.horse-details-panel {
+  min-height: 420px;
+}
+
+.horse-details {
+  display: grid;
+  gap: 18px;
+  margin-top: 18px;
+}
+
+.horse-details-hero {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid #283034;
+  border-radius: 8px;
+  background: #15191e;
+}
+
+.horse-details-hero h3 {
+  margin: 4px 0 0;
+  font-size: 1.55rem;
+}
+
+.horse-details-hero span {
+  color: #8df3a7;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.details-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0;
+}
+
+.details-grid div,
+.details-note {
+  min-height: 74px;
+  padding: 12px;
+  border: 1px solid #283034;
+  border-radius: 8px;
+  background: #11151a;
+}
+
+.details-grid dt,
+.details-note dt {
+  color: #a4acb5;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.details-grid dd,
+.details-note dd {
+  margin: 6px 0 0;
+  color: #f6f7f9;
+}
+
+.error-message {
+  margin-top: 12px;
+  color: #ffb4a8;
+}
+
+.empty-state {
+  display: grid;
+  gap: 8px;
+  min-height: 180px;
+  align-content: center;
+}
+
+.empty-state p {
+  margin: 0;
+  color: #a4acb5;
+}
+
+.empty-state.compact {
+  min-height: 240px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
 .task-list input {
   width: 18px;
   height: 18px;
@@ -355,8 +568,15 @@ h1 {
     flex-direction: column;
   }
 
-  .primary-action {
+  .primary-action,
+  .secondary-action,
+  .ghost-action {
     width: 100%;
+  }
+
+  .section-toolbar {
+    align-items: flex-start;
+    flex-direction: column;
   }
 
   .nav-list,
@@ -370,5 +590,9 @@ h1 {
 
   .welcome-band {
     padding: 20px;
+  }
+
+  .details-grid {
+    grid-template-columns: 1fr;
   }
 }
