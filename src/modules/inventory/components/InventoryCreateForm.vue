@@ -1,8 +1,21 @@
 <script setup lang="ts">
-import { reactive } from "vue";
+import { reactive, watch } from "vue";
 import { Warehouse } from "@lucide/vue";
-import type { CreateInventoryItemRequest } from "../types/inventory";
+import type { CreateInventoryItemRequest, InventoryItemDetails } from "../types/inventory";
 import { inventoryUnitOptions } from "../utils/inventoryLabels";
+
+const props = withDefaults(
+  defineProps<{
+    item?: InventoryItemDetails | null;
+    title?: string;
+    submitLabel?: string;
+  }>(),
+  {
+    item: null,
+    title: "Nowa pozycja magazynowa",
+    submitLabel: "Zapisz pozycję"
+  }
+);
 
 const emit = defineEmits<{
   submit: [request: CreateInventoryItemRequest];
@@ -16,6 +29,18 @@ const form = reactive({
   minimum_quantity: null as number | null,
   daily_usage: null as number | null
 });
+
+watch(
+  () => props.item,
+  (item) => {
+    form.name = item?.name ?? "";
+    form.unit = item?.unit ?? "kg";
+    form.quantity = item?.quantity ?? 0;
+    form.minimum_quantity = item?.minimum_quantity ?? null;
+    form.daily_usage = item?.daily_usage ?? null;
+  },
+  { immediate: true }
+);
 
 function submitForm() {
   emit("submit", {
@@ -32,7 +57,7 @@ function submitForm() {
 <template>
   <section class="panel">
     <div class="panel-heading">
-      <h2>Nowa pozycja magazynowa</h2>
+      <h2>{{ title }}</h2>
       <Warehouse :size="20" aria-hidden="true" />
     </div>
 
@@ -62,7 +87,7 @@ function submitForm() {
         <input v-model.number="form.daily_usage" type="number" min="0" step="0.01" />
       </label>
       <div class="form-actions">
-        <button class="secondary-action" type="submit">Zapisz pozycję</button>
+        <button class="secondary-action" type="submit">{{ submitLabel }}</button>
         <button class="ghost-action" type="button" @click="emit('cancel')">Anuluj</button>
       </div>
     </form>

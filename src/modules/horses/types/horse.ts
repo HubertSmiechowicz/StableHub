@@ -25,3 +25,13 @@ export type CreateHorseRequest = {
   identification_number: string | null;
   notes: string | null;
 };
+
+export type UpdateHorseRequest = CreateHorseRequest & {
+  id: string;
+};
+
+export type HorseListRequest = {
+  search: string | null;
+  sort_by: "name" | "breed" | "created_at";
+  sort_direction: "asc" | "desc";
+};

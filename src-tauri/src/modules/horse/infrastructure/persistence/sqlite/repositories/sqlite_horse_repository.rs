@@ -3,8 +3,9 @@ use sqlx::{FromRow, SqlitePool};
 
 use crate::modules::horse::application::{
     dto::{HorseDetails, HorseProfileData, HorseSummary},
-    ports::HorseRepository,
+    ports::{HorseListOptions, HorseRepository, HorseSortBy, SortDirection},
 };
+use crate::modules::horse::domain::{Horse, HorseId, HorseName, HorseStatus};
 
 pub struct SqliteHorseRepository {
     pool: SqlitePool,
@@ -68,6 +69,34 @@ impl HorseRepository for SqliteHorseRepository {
         Ok(())
     }
 
+    async fn find_profile_by_id(&self, id: &str) -> Result<Option<HorseProfileData>, String> {
+        let row = sqlx::query_as::<_, HorseProfileRow>(
+            r#"
+            SELECT
+                id,
+                name,
+                sex,
+                breed,
+                date_of_birth,
+                coat_color,
+                identification_number,
+                notes,
+                status,
+                created_at,
+                updated_at,
+                archived_at
+            FROM horses
+            WHERE id = ?
+            "#,
+        )
+        .bind(id)
+        .fetch_optional(&self.pool)
+        .await
+        .map_err(|error| format!("Nie udało się pobrać profilu konia: {error}"))?;
+
+        row.map(HorseProfileData::try_from).transpose()
+    }
+
     async fn find_details_by_id(&self, id: &str) -> Result<Option<HorseDetails>, String> {
         let row = sqlx::query_as::<_, HorseDetailsRow>(
             r#"
@@ -96,8 +125,20 @@ impl HorseRepository for SqliteHorseRepository {
         Ok(row.map(HorseDetails::from))
     }
 
-    async fn list_active_summaries(&self) -> Result<Vec<HorseSummary>, String> {
-        let rows = sqlx::query_as::<_, HorseSummaryRow>(
+    async fn list_active_summaries(
+        &self,
+        options: &HorseListOptions,
+    ) -> Result<Vec<HorseSummary>, String> {
+        let order_by = match options.sort_by {
+            HorseSortBy::Name => "name COLLATE NOCASE",
+            HorseSortBy::Breed => "breed COLLATE NOCASE",
+            HorseSortBy::CreatedAt => "created_at",
+        };
+        let direction = match options.sort_direction {
+            SortDirection::Asc => "ASC",
+            SortDirection::Desc => "DESC",
+        };
+        let sql = format!(
             r#"
             SELECT
                 id,
@@ -107,14 +148,63 @@ impl HorseRepository for SqliteHorseRepository {
                 status
             FROM horses
             WHERE status = 'active'
-            ORDER BY name COLLATE NOCASE ASC
-            "#,
-        )
-        .fetch_all(&self.pool)
-        .await
-        .map_err(|error| format!("Nie udało się pobrać listy koni: {error}"))?;
+              AND (? IS NULL OR lower(name) LIKE lower(?) OR lower(COALESCE(breed, '')) LIKE lower(?))
+            ORDER BY {order_by} {direction}, name COLLATE NOCASE ASC
+            "#
+        );
+        let search = options.search.as_ref().map(|value| format!("%{value}%"));
+
+        let rows = sqlx::query_as::<_, HorseSummaryRow>(&sql)
+            .bind(search.as_deref())
+            .bind(search.as_deref())
+            .bind(search.as_deref())
+            .fetch_all(&self.pool)
+            .await
+            .map_err(|error| format!("Nie udało się pobrać listy koni: {error}"))?;
 
         Ok(rows.into_iter().map(HorseSummary::from).collect())
+    }
+}
+
+#[derive(Debug, FromRow)]
+struct HorseProfileRow {
+    id: String,
+    name: String,
+    sex: Option<String>,
+    breed: Option<String>,
+    date_of_birth: Option<String>,
+    coat_color: Option<String>,
+    identification_number: Option<String>,
+    notes: Option<String>,
+    status: String,
+    created_at: String,
+    updated_at: String,
+    archived_at: Option<String>,
+}
+
+impl TryFrom<HorseProfileRow> for HorseProfileData {
+    type Error = String;
+
+    fn try_from(row: HorseProfileRow) -> Result<Self, Self::Error> {
+        let status = HorseStatus::try_from(row.status.as_str())?;
+        let horse = Horse::from_existing(
+            HorseId::from_string(row.id),
+            HorseName::new(row.name).map_err(|error| error.to_string())?,
+            status,
+        );
+
+        Ok(Self {
+            horse,
+            sex: row.sex,
+            breed: row.breed,
+            date_of_birth: row.date_of_birth,
+            coat_color: row.coat_color,
+            identification_number: row.identification_number,
+            notes: row.notes,
+            created_at: row.created_at,
+            updated_at: row.updated_at,
+            archived_at: row.archived_at,
+        })
     }
 }
 

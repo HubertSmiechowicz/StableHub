@@ -1,3 +1,5 @@
 pub mod inventory_repository;
 
-pub use inventory_repository::InventoryRepository;
+pub use inventory_repository::{
+    InventoryListOptions, InventoryRepository, InventorySortBy, SortDirection,
+};

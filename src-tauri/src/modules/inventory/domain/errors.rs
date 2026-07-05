@@ -11,10 +11,15 @@ impl std::fmt::Display for InventoryDomainError {
         match self {
             Self::EmptyName => write!(formatter, "Nazwa pozycji magazynowej jest wymagana"),
             Self::NameTooLong => {
-                write!(formatter, "Nazwa pozycji magazynowej nie może być dłuższa niż 100 znaków")
+                write!(
+                    formatter,
+                    "Nazwa pozycji magazynowej nie może być dłuższa niż 100 znaków"
+                )
             }
             Self::NegativeStock => write!(formatter, "Stan magazynowy nie może być ujemny"),
-            Self::UnsupportedUnit(unit) => write!(formatter, "Nieobsługiwana jednostka magazynowa: {unit}"),
+            Self::UnsupportedUnit(unit) => {
+                write!(formatter, "Nieobsługiwana jednostka magazynowa: {unit}")
+            }
         }
     }
 }

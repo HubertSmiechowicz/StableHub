@@ -97,6 +97,9 @@ Pierwszy zakres:
 - [x] srednie dzienne zuzycie,
 - [x] wyliczenie liczby dni zapasu w read modelu.
 - [x] blokada duplikatow aktywnych pozycji o tej samej nazwie i jednostce.
+- [x] edycja pozycji magazynowej.
+- [x] soft delete pozycji magazynowej.
+- [x] filtrowanie i sortowanie listy pozycji magazynowych.
 
 ### Do zaimplementowania pozniej
 
@@ -104,7 +107,6 @@ Pierwszy zakres:
 - historia ruchow magazynowych,
 - przyjecie dostawy,
 - rejestracja zuzycia,
-- aktualizacja stanu istniejacej pozycji zamiast ponownego dodawania tej samej pozycji,
 - powiadomienia o niskim stanie magazynowym,
 - alerty na dashboardzie,
 - konfiguracja progow ostrzezen,

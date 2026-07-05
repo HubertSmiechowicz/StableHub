@@ -22,3 +22,13 @@ export type CreateInventoryItemRequest = {
   minimum_quantity: number | null;
   daily_usage: number | null;
 };
+
+export type UpdateInventoryItemRequest = CreateInventoryItemRequest & {
+  id: string;
+};
+
+export type InventoryListRequest = {
+  search: string | null;
+  sort_by: "name" | "quantity" | "days_remaining" | "created_at";
+  sort_direction: "asc" | "desc";
+};

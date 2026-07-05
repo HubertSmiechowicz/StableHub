@@ -6,13 +6,22 @@ import { displayValue, sexLabel } from "../utils/horseLabels";
 defineProps<{
   horse: HorseDetails;
 }>();
+
+const emit = defineEmits<{
+  edit: [];
+  archive: [];
+}>();
 </script>
 
 <template>
   <section class="panel horse-details-panel">
     <div class="panel-heading">
       <h2>Profil konia</h2>
-      <ClipboardList :size="20" aria-hidden="true" />
+      <div class="panel-actions">
+        <button class="ghost-action" type="button" @click="emit('edit')">Edytuj</button>
+        <button class="danger-action" type="button" @click="emit('archive')">Usuń</button>
+        <ClipboardList :size="20" aria-hidden="true" />
+      </div>
     </div>
 
     <div class="horse-details">

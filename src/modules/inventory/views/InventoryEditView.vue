@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from "vue";
-import { archiveInventoryItem, getInventoryItemDetails } from "../api/inventoryApi";
-import InventoryItemDetailsCard from "../components/InventoryItemDetailsCard.vue";
-import type { InventoryItemDetails } from "../types/inventory";
+import { getInventoryItemDetails, updateInventoryItem } from "../api/inventoryApi";
+import InventoryCreateForm from "../components/InventoryCreateForm.vue";
+import type {
+  CreateInventoryItemRequest,
+  InventoryItemDetails
+} from "../types/inventory";
 import { formatError } from "../../../shared/errors";
 
 const props = defineProps<{
@@ -10,8 +13,8 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  back: [];
-  edit: [id: string];
+  saved: [id: string];
+  cancel: [];
 }>();
 
 const item = ref<InventoryItemDetails | null>(null);
@@ -31,18 +34,14 @@ async function load() {
   }
 }
 
-async function archiveCurrentItem() {
-  if (!confirm("Czy na pewno usunąć tę pozycję magazynową?")) {
-    return;
-  }
-
+async function submit(request: CreateInventoryItemRequest) {
   error.value = null;
 
   try {
-    await archiveInventoryItem(props.itemId);
-    emit("back");
+    const updated = await updateInventoryItem({ ...request, id: props.itemId });
+    emit("saved", updated.id);
   } catch (caught) {
-    error.value = formatError(caught, "Nie udało się usunąć pozycji magazynowej.");
+    error.value = formatError(caught, "Nie udało się zaktualizować pozycji magazynowej.");
   }
 }
 
@@ -54,9 +53,8 @@ watch(() => props.itemId, load);
   <section class="section-toolbar">
     <div>
       <p class="eyebrow">Moduł magazynu</p>
-      <h2>Szczegóły</h2>
+      <h2>Edytuj pozycję</h2>
     </div>
-    <button class="ghost-action" type="button" @click="emit('back')">Wróć do listy</button>
   </section>
 
   <p v-if="error" class="error-message">{{ error }}</p>
@@ -64,14 +62,12 @@ watch(() => props.itemId, load);
     <h2>Ładowanie</h2>
     <p>Trwa pobieranie pozycji magazynowej.</p>
   </section>
-  <InventoryItemDetailsCard
+  <InventoryCreateForm
     v-else-if="item"
     :item="item"
-    @edit="emit('edit', item.id)"
-    @archive="archiveCurrentItem"
+    title="Edycja pozycji magazynowej"
+    submit-label="Zapisz zmiany"
+    @submit="submit"
+    @cancel="emit('cancel')"
   />
-  <section v-else class="panel empty-state compact">
-    <h2>Nie znaleziono pozycji</h2>
-    <p>Wróć do listy i wybierz pozycję ponownie.</p>
-  </section>
 </template>

@@ -13,9 +13,11 @@ import {
 import DashboardView from "./modules/dashboard/views/DashboardView.vue";
 import HorseCreateView from "./modules/horses/views/HorseCreateView.vue";
 import HorseDetailsView from "./modules/horses/views/HorseDetailsView.vue";
+import HorseEditView from "./modules/horses/views/HorseEditView.vue";
 import HorsesListView from "./modules/horses/views/HorsesListView.vue";
 import InventoryCreateView from "./modules/inventory/views/InventoryCreateView.vue";
 import InventoryDetailsView from "./modules/inventory/views/InventoryDetailsView.vue";
+import InventoryEditView from "./modules/inventory/views/InventoryEditView.vue";
 import InventoryListView from "./modules/inventory/views/InventoryListView.vue";
 
 type ViewId =
@@ -23,9 +25,11 @@ type ViewId =
   | "horses"
   | "horse-create"
   | "horse-details"
+  | "horse-edit"
   | "inventory"
   | "inventory-create"
   | "inventory-details"
+  | "inventory-edit"
   | "finance"
   | "calendar"
   | "health"
@@ -55,12 +59,16 @@ const pageTitle = computed(() => {
       return "Nowy koń";
     case "horse-details":
       return "Szczegóły konia";
+    case "horse-edit":
+      return "Edytuj konia";
     case "inventory":
       return "Magazyn";
     case "inventory-create":
       return "Nowa pozycja";
     case "inventory-details":
       return "Szczegóły pozycji";
+    case "inventory-edit":
+      return "Edytuj pozycję";
     case "finance":
       return "Finanse";
     case "calendar":
@@ -84,7 +92,8 @@ const pageSubtitle = computed(() => {
   if (
     currentView.value === "horses" ||
     currentView.value === "horse-create" ||
-    currentView.value === "horse-details"
+    currentView.value === "horse-details" ||
+    currentView.value === "horse-edit"
   ) {
     return "Moduł koni";
   }
@@ -92,7 +101,8 @@ const pageSubtitle = computed(() => {
   if (
     currentView.value === "inventory" ||
     currentView.value === "inventory-create" ||
-    currentView.value === "inventory-details"
+    currentView.value === "inventory-details" ||
+    currentView.value === "inventory-edit"
   ) {
     return "Moduł magazynu";
   }
@@ -109,6 +119,11 @@ function openHorseDetails(id: string) {
   currentView.value = "horse-details";
 }
 
+function openHorseEdit(id: string) {
+  selectedHorseId.value = id;
+  currentView.value = "horse-edit";
+}
+
 function backToHorseList() {
   currentView.value = "horses";
 }
@@ -116,6 +131,11 @@ function backToHorseList() {
 function openInventoryDetails(id: string) {
   selectedInventoryItemId.value = id;
   currentView.value = "inventory-details";
+}
+
+function openInventoryEdit(id: string) {
+  selectedInventoryItemId.value = id;
+  currentView.value = "inventory-edit";
 }
 
 function backToInventoryList() {
@@ -143,9 +163,13 @@ function backToInventoryList() {
             active:
               currentView === item.id ||
               (item.id === 'horses' &&
-                (currentView === 'horse-create' || currentView === 'horse-details')) ||
+                (currentView === 'horse-create' ||
+                  currentView === 'horse-details' ||
+                  currentView === 'horse-edit')) ||
               (item.id === 'inventory' &&
-                (currentView === 'inventory-create' || currentView === 'inventory-details'))
+                (currentView === 'inventory-create' ||
+                  currentView === 'inventory-details' ||
+                  currentView === 'inventory-edit'))
           }"
           type="button"
           @click="selectView(item.id)"
@@ -179,6 +203,13 @@ function backToInventoryList() {
         v-else-if="currentView === 'horse-details' && selectedHorseId"
         :horse-id="selectedHorseId"
         @back="backToHorseList"
+        @edit="openHorseEdit"
+      />
+      <HorseEditView
+        v-else-if="currentView === 'horse-edit' && selectedHorseId"
+        :horse-id="selectedHorseId"
+        @saved="openHorseDetails"
+        @cancel="openHorseDetails(selectedHorseId)"
       />
       <InventoryListView
         v-else-if="currentView === 'inventory'"
@@ -194,6 +225,13 @@ function backToInventoryList() {
         v-else-if="currentView === 'inventory-details' && selectedInventoryItemId"
         :item-id="selectedInventoryItemId"
         @back="backToInventoryList"
+        @edit="openInventoryEdit"
+      />
+      <InventoryEditView
+        v-else-if="currentView === 'inventory-edit' && selectedInventoryItemId"
+        :item-id="selectedInventoryItemId"
+        @saved="openInventoryDetails"
+        @cancel="openInventoryDetails(selectedInventoryItemId)"
       />
       <section v-else class="panel empty-state">
         <h2>{{ pageTitle }}</h2>

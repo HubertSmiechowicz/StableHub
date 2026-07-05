@@ -1,6 +1,4 @@
-use super::{
-    InventoryItemId, InventoryItemName, InventoryItemStatus, InventoryUnit, StockLevel,
-};
+use super::{InventoryItemId, InventoryItemName, InventoryItemStatus, InventoryUnit, StockLevel};
 
 #[derive(Debug, Clone)]
 pub struct InventoryItem {
@@ -25,6 +23,37 @@ impl InventoryItem {
             stock_level,
             status: InventoryItemStatus::Active,
         }
+    }
+
+    pub fn from_existing(
+        id: InventoryItemId,
+        name: InventoryItemName,
+        unit: InventoryUnit,
+        stock_level: StockLevel,
+        status: InventoryItemStatus,
+    ) -> Self {
+        Self {
+            id,
+            name,
+            unit,
+            stock_level,
+            status,
+        }
+    }
+
+    pub fn update_profile(
+        &mut self,
+        name: InventoryItemName,
+        unit: InventoryUnit,
+        stock_level: StockLevel,
+    ) {
+        self.name = name;
+        self.unit = unit;
+        self.stock_level = stock_level;
+    }
+
+    pub fn archive(&mut self) {
+        self.status = InventoryItemStatus::Archived;
     }
 
     pub fn id(&self) -> &InventoryItemId {

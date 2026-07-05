@@ -130,6 +130,12 @@ GetHorseDetailsQuery
 GetHorseDetailsHandler
 ```
 
+Usuwanie encji w podstawowych modulach jest soft delete:
+
+- command ustawia status archiwalny i `archived_at`,
+- domyslne listy zwracaja tylko aktywne rekordy,
+- dane pozostaja w lokalnej bazie SQLite do celow historii, audytu i przyszlych widokow archiwum.
+
 ## Ports & Adapters
 
 Porty sa definiowane w application.

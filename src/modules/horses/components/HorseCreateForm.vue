@@ -1,7 +1,20 @@
 <script setup lang="ts">
-import { reactive } from "vue";
+import { reactive, watch } from "vue";
 import { Sprout } from "@lucide/vue";
-import type { CreateHorseRequest } from "../types/horse";
+import type { CreateHorseRequest, HorseDetails } from "../types/horse";
+
+const props = withDefaults(
+  defineProps<{
+    horse?: HorseDetails | null;
+    title?: string;
+    submitLabel?: string;
+  }>(),
+  {
+    horse: null,
+    title: "Nowy koń",
+    submitLabel: "Zapisz konia"
+  }
+);
 
 const emit = defineEmits<{
   submit: [request: CreateHorseRequest];
@@ -17,6 +30,20 @@ const form = reactive({
   identification_number: "",
   notes: ""
 });
+
+watch(
+  () => props.horse,
+  (horse) => {
+    form.name = horse?.name ?? "";
+    form.sex = horse?.sex ?? "unknown";
+    form.breed = horse?.breed ?? "";
+    form.date_of_birth = horse?.date_of_birth ?? "";
+    form.coat_color = horse?.coat_color ?? "";
+    form.identification_number = horse?.identification_number ?? "";
+    form.notes = horse?.notes ?? "";
+  },
+  { immediate: true }
+);
 
 function submitForm() {
   emit("submit", {
@@ -34,7 +61,7 @@ function submitForm() {
 <template>
   <section class="panel">
     <div class="panel-heading">
-      <h2>Nowy koń</h2>
+      <h2>{{ title }}</h2>
       <Sprout :size="20" aria-hidden="true" />
     </div>
 
@@ -73,7 +100,7 @@ function submitForm() {
         </datalist>
       </label>
       <div class="form-actions">
-        <button class="secondary-action" type="submit">Zapisz konia</button>
+        <button class="secondary-action" type="submit">{{ submitLabel }}</button>
         <button class="ghost-action" type="button" @click="emit('cancel')">Anuluj</button>
       </div>
     </form>

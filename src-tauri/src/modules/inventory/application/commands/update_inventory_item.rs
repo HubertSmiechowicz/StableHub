@@ -1,12 +1,10 @@
 use crate::modules::inventory::{
-    application::{
-        dto::{InventoryItemDetails, InventoryItemProfileData},
-        ports::InventoryRepository,
-    },
-    domain::{InventoryItem, InventoryItemId, InventoryItemName, InventoryUnit, StockLevel},
+    application::{dto::InventoryItemDetails, ports::InventoryRepository},
+    domain::{InventoryItemName, InventoryItemStatus, InventoryUnit, StockLevel},
 };
 
-pub struct CreateInventoryItemCommand {
+pub struct UpdateInventoryItemCommand {
+    pub id: String,
     pub name: String,
     pub unit: String,
     pub quantity: f64,
@@ -14,14 +12,14 @@ pub struct CreateInventoryItemCommand {
     pub daily_usage: Option<f64>,
 }
 
-pub struct CreateInventoryItemHandler<'a, R>
+pub struct UpdateInventoryItemHandler<'a, R>
 where
     R: InventoryRepository,
 {
     repository: &'a R,
 }
 
-impl<'a, R> CreateInventoryItemHandler<'a, R>
+impl<'a, R> UpdateInventoryItemHandler<'a, R>
 where
     R: InventoryRepository,
 {
@@ -31,8 +29,18 @@ where
 
     pub async fn handle(
         &self,
-        command: CreateInventoryItemCommand,
+        command: UpdateInventoryItemCommand,
     ) -> Result<InventoryItemDetails, String> {
+        let mut profile = self
+            .repository
+            .find_profile_by_id(&command.id)
+            .await?
+            .ok_or_else(|| "Nie znaleziono pozycji magazynowej".to_string())?;
+
+        if profile.item.status() == InventoryItemStatus::Archived {
+            return Err("Nie można edytować usuniętej pozycji magazynowej".to_string());
+        }
+
         let name = InventoryItemName::new(command.name).map_err(|error| error.to_string())?;
         let unit =
             InventoryUnit::try_from(command.unit.as_str()).map_err(|error| error.to_string())?;
@@ -42,7 +50,11 @@ where
 
         let duplicate_exists = self
             .repository
-            .active_item_exists(name.as_str(), unit.as_str(), None)
+            .active_item_exists(
+                name.as_str(),
+                unit.as_str(),
+                Some(profile.item.id().as_str()),
+            )
             .await?;
 
         if duplicate_exists {
@@ -51,32 +63,17 @@ where
             );
         }
 
-        let item = InventoryItem::create(InventoryItemId::generate(), name, unit, stock_level);
-        let now = current_timestamp();
-        let profile = InventoryItemProfileData {
-            item,
-            minimum_quantity,
-            daily_usage,
-            created_at: now.clone(),
-            updated_at: now,
-            archived_at: None,
-        };
+        profile.item.update_profile(name, unit, stock_level);
+        profile.minimum_quantity = minimum_quantity;
+        profile.daily_usage = daily_usage;
+        profile.updated_at = current_timestamp();
 
         self.repository.save_item(&profile).await?;
 
-        Ok(InventoryItemDetails {
-            id: profile.item.id().as_str().to_string(),
-            name: profile.item.name().as_str().to_string(),
-            unit: profile.item.unit().as_str().to_string(),
-            quantity: profile.item.stock_level().value(),
-            minimum_quantity: profile.minimum_quantity,
-            daily_usage: profile.daily_usage,
-            days_remaining: days_remaining(profile.item.stock_level().value(), profile.daily_usage),
-            status: profile.item.status().as_str().to_string(),
-            created_at: profile.created_at,
-            updated_at: profile.updated_at,
-            archived_at: profile.archived_at,
-        })
+        self.repository
+            .find_details_by_id(profile.item.id().as_str())
+            .await?
+            .ok_or_else(|| "Nie znaleziono pozycji magazynowej po aktualizacji".to_string())
     }
 }
 
@@ -88,12 +85,6 @@ fn normalize_non_negative(value: Option<f64>) -> Result<Option<f64>, String> {
         Some(value) if value == 0.0 => Ok(None),
         other => Ok(other),
     }
-}
-
-fn days_remaining(quantity: f64, daily_usage: Option<f64>) -> Option<f64> {
-    daily_usage
-        .filter(|usage| *usage > 0.0)
-        .map(|usage| quantity / usage)
 }
 
 fn current_timestamp() -> String {

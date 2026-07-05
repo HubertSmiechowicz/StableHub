@@ -15,8 +15,8 @@ Obecnie istnieje:
 - ekran powitalny StableHub,
 - przygotowana struktura backendu pod DDD i Modular Monolith,
 - przygotowane zależności pod lokalną bazę SQLite przez SQLx,
-- pierwszy pion modułu `horse`: `CreateHorse` i `ListHorses`,
-- pierwszy pion modułu `inventory`: `CreateInventoryItem`, `ListInventoryItems` i `GetInventoryItemDetails`,
+- podstawowy moduł `horse`: tworzenie, edycja, soft delete, lista, filtrowanie, sortowanie i szczegóły,
+- podstawowy moduł `inventory`: tworzenie, edycja, soft delete, lista, filtrowanie, sortowanie i szczegóły,
 - podstawowa konfiguracja buildów desktopowych.
 
 ## Założenia produktu
@@ -144,7 +144,10 @@ Zasady:
 Pierwsza implementacja modułu `horse` obejmuje podstawowy rejestr koni:
 
 - utworzenie konia przez command `CreateHorse`,
+- edycję konia przez command `UpdateHorse`,
+- soft delete przez command `ArchiveHorse`,
 - pobranie aktywnych koni przez query `ListHorses`,
+- filtrowanie i sortowanie listy koni,
 - pobranie szczegółów konia przez query `GetHorseDetails`,
 - zapis lokalny w SQLite,
 - migrację tabeli `horses`,
@@ -175,6 +178,7 @@ Moduł `horses` ma oddzielne widoki dla listy, dodawania i szczegółów konia:
 HorsesListView
 HorseCreateView
 HorseDetailsView
+HorseEditView
 ```
 
 ## Moduł `inventory`
@@ -182,7 +186,10 @@ HorseDetailsView
 Pierwsza implementacja modułu `inventory` obejmuje podstawowy magazyn stajni:
 
 - utworzenie pozycji magazynowej przez command `CreateInventoryItem`,
+- edycję pozycji magazynowej przez command `UpdateInventoryItem`,
+- soft delete przez command `ArchiveInventoryItem`,
 - pobranie aktywnych pozycji przez query `ListInventoryItems`,
+- filtrowanie i sortowanie listy pozycji,
 - pobranie szczegółów pozycji przez query `GetInventoryItemDetails`,
 - zapis lokalny w SQLite,
 - migrację tabeli `inventory_items`,
@@ -191,7 +198,7 @@ Pierwsza implementacja modułu `inventory` obejmuje podstawowy magazyn stajni:
 - minimalny stan,
 - średnie dzienne zużycie,
 - wyliczanie liczby dni zapasu w read modelu,
-- osobne widoki listy, dodawania i szczegółów w UI.
+- osobne widoki listy, dodawania, edycji i szczegółów w UI.
 
 Na tym etapie moduł nie ma jeszcze historii ruchów magazynowych, inwentaryzacji ani alertów niskiego stanu. Te elementy są zapisane w `docs/TODO.md`.
 

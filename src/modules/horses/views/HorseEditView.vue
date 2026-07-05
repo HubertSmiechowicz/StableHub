@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from "vue";
-import { archiveHorse, getHorseDetails } from "../api/horseApi";
-import HorseDetailsCard from "../components/HorseDetailsCard.vue";
-import type { HorseDetails } from "../types/horse";
+import { getHorseDetails, updateHorse } from "../api/horseApi";
+import HorseCreateForm from "../components/HorseCreateForm.vue";
+import type { CreateHorseRequest, HorseDetails } from "../types/horse";
 import { formatError } from "../../../shared/errors";
 
 const props = defineProps<{
@@ -10,8 +10,8 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  back: [];
-  edit: [id: string];
+  saved: [id: string];
+  cancel: [];
 }>();
 
 const horse = ref<HorseDetails | null>(null);
@@ -31,18 +31,14 @@ async function load() {
   }
 }
 
-async function archiveCurrentHorse() {
-  if (!confirm("Czy na pewno usunąć tego konia?")) {
-    return;
-  }
-
+async function submit(request: CreateHorseRequest) {
   error.value = null;
 
   try {
-    await archiveHorse(props.horseId);
-    emit("back");
+    const updated = await updateHorse({ ...request, id: props.horseId });
+    emit("saved", updated.id);
   } catch (caught) {
-    error.value = formatError(caught, "Nie udało się usunąć konia.");
+    error.value = formatError(caught, "Nie udało się zaktualizować konia.");
   }
 }
 
@@ -54,9 +50,8 @@ watch(() => props.horseId, load);
   <section class="section-toolbar">
     <div>
       <p class="eyebrow">Moduł koni</p>
-      <h2>Szczegóły</h2>
+      <h2>Edytuj konia</h2>
     </div>
-    <button class="ghost-action" type="button" @click="emit('back')">Wróć do listy</button>
   </section>
 
   <p v-if="error" class="error-message">{{ error }}</p>
@@ -64,14 +59,12 @@ watch(() => props.horseId, load);
     <h2>Ładowanie</h2>
     <p>Trwa pobieranie profilu konia.</p>
   </section>
-  <HorseDetailsCard
+  <HorseCreateForm
     v-else-if="horse"
     :horse="horse"
-    @edit="emit('edit', horse.id)"
-    @archive="archiveCurrentHorse"
+    title="Edycja konia"
+    submit-label="Zapisz zmiany"
+    @submit="submit"
+    @cancel="emit('cancel')"
   />
-  <section v-else class="panel empty-state compact">
-    <h2>Nie znaleziono konia</h2>
-    <p>Wróć do listy i wybierz profil ponownie.</p>
-  </section>
 </template>

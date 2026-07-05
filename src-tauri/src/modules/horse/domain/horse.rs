@@ -16,6 +16,18 @@ impl Horse {
         }
     }
 
+    pub fn from_existing(id: HorseId, name: HorseName, status: HorseStatus) -> Self {
+        Self { id, name, status }
+    }
+
+    pub fn rename(&mut self, name: HorseName) {
+        self.name = name;
+    }
+
+    pub fn archive(&mut self) {
+        self.status = HorseStatus::Archived;
+    }
+
     pub fn id(&self) -> &HorseId {
         &self.id
     }
