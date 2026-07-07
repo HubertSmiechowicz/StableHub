@@ -14,8 +14,9 @@ use modules::horse::interfaces::tauri_commands::{
     archive_horse, create_horse, get_horse_details, list_horses, update_horse,
 };
 use modules::inventory::interfaces::tauri_commands::{
-    archive_inventory_item, create_inventory_item, get_inventory_item_details,
-    list_inventory_items, update_inventory_item,
+    apply_inventory_usage, archive_inventory_item, create_inventory_item,
+    get_inventory_item_details, list_inventory_items, record_inventory_stocktake,
+    register_inventory_delivery, update_inventory_item,
 };
 use state::AppState;
 use tauri::Manager;
@@ -30,6 +31,7 @@ pub fn run() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
+            apply_inventory_usage,
             archive_calendar_entry,
             archive_health_event,
             archive_horse,
@@ -46,6 +48,8 @@ pub fn run() {
             list_health_events,
             list_horses,
             list_inventory_items,
+            record_inventory_stocktake,
+            register_inventory_delivery,
             update_calendar_entry,
             update_health_event,
             update_horse,

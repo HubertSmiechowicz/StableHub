@@ -1,4 +1,6 @@
 mod errors;
+mod inventory_delivery_cost;
+mod inventory_delivery_quantity;
 mod inventory_item;
 mod inventory_item_id;
 mod inventory_item_name;
@@ -7,6 +9,8 @@ mod inventory_unit;
 mod stock_level;
 
 pub use errors::InventoryDomainError;
+pub use inventory_delivery_cost::InventoryDeliveryCost;
+pub use inventory_delivery_quantity::InventoryDeliveryQuantity;
 pub use inventory_item::InventoryItem;
 pub use inventory_item_id::InventoryItemId;
 pub use inventory_item_name::InventoryItemName;

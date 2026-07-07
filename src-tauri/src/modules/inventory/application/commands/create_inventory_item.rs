@@ -9,7 +9,6 @@ use crate::modules::inventory::{
 pub struct CreateInventoryItemCommand {
     pub name: String,
     pub unit: String,
-    pub quantity: f64,
     pub minimum_quantity: Option<f64>,
     pub daily_usage: Option<f64>,
 }
@@ -36,7 +35,7 @@ where
         let name = InventoryItemName::new(command.name).map_err(|error| error.to_string())?;
         let unit =
             InventoryUnit::try_from(command.unit.as_str()).map_err(|error| error.to_string())?;
-        let stock_level = StockLevel::new(command.quantity).map_err(|error| error.to_string())?;
+        let stock_level = StockLevel::new(0.0).map_err(|error| error.to_string())?;
         let minimum_quantity = normalize_non_negative(command.minimum_quantity)?;
         let daily_usage = normalize_non_negative(command.daily_usage)?;
 
@@ -58,8 +57,9 @@ where
             minimum_quantity,
             daily_usage,
             created_at: now.clone(),
-            updated_at: now,
+            updated_at: now.clone(),
             archived_at: None,
+            last_usage_applied_at: Some(now),
         };
 
         self.repository.save_item(&profile).await?;
@@ -73,6 +73,13 @@ where
             daily_usage: profile.daily_usage,
             days_remaining: days_remaining(profile.item.stock_level().value(), profile.daily_usage),
             status: profile.item.status().as_str().to_string(),
+            recent_deliveries: Vec::new(),
+            recent_stocktakes: Vec::new(),
+            total_delivery_cost: 0.0,
+            average_unit_cost: None,
+            last_usage_applied_at: profile.last_usage_applied_at,
+            pending_usage_days: 0,
+            pending_usage_quantity: 0.0,
             created_at: profile.created_at,
             updated_at: profile.updated_at,
             archived_at: profile.archived_at,

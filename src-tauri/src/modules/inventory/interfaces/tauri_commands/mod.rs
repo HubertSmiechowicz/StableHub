@@ -5,10 +5,17 @@ use crate::{
     modules::inventory::{
         application::{
             commands::{
+                apply_inventory_usage::{ApplyInventoryUsageCommand, ApplyInventoryUsageHandler},
                 archive_inventory_item::{
                     ArchiveInventoryItemCommand, ArchiveInventoryItemHandler,
                 },
                 create_inventory_item::{CreateInventoryItemCommand, CreateInventoryItemHandler},
+                record_inventory_stocktake::{
+                    RecordInventoryStocktakeCommand, RecordInventoryStocktakeHandler,
+                },
+                register_inventory_delivery::{
+                    RegisterInventoryDeliveryCommand, RegisterInventoryDeliveryHandler,
+                },
                 update_inventory_item::{UpdateInventoryItemCommand, UpdateInventoryItemHandler},
             },
             dto::{InventoryItemDetails, InventoryItemSummary},
@@ -28,7 +35,6 @@ use crate::{
 pub struct CreateInventoryItemRequest {
     pub name: String,
     pub unit: String,
-    pub quantity: f64,
     pub minimum_quantity: Option<f64>,
     pub daily_usage: Option<f64>,
 }
@@ -38,7 +44,6 @@ pub struct UpdateInventoryItemRequest {
     pub id: String,
     pub name: String,
     pub unit: String,
-    pub quantity: f64,
     pub minimum_quantity: Option<f64>,
     pub daily_usage: Option<f64>,
 }
@@ -48,6 +53,24 @@ pub struct ListInventoryItemsRequest {
     pub search: Option<String>,
     pub sort_by: Option<String>,
     pub sort_direction: Option<String>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct RegisterInventoryDeliveryRequest {
+    pub inventory_item_id: String,
+    pub delivered_on: String,
+    pub quantity: f64,
+    pub total_cost: f64,
+    pub supplier: Option<String>,
+    pub notes: Option<String>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct RecordInventoryStocktakeRequest {
+    pub inventory_item_id: String,
+    pub counted_on: String,
+    pub actual_quantity: f64,
+    pub notes: Option<String>,
 }
 
 #[tauri::command]
@@ -62,7 +85,6 @@ pub async fn create_inventory_item(
         .handle(CreateInventoryItemCommand {
             name: request.name,
             unit: request.unit,
-            quantity: request.quantity,
             minimum_quantity: request.minimum_quantity,
             daily_usage: request.daily_usage,
         })
@@ -82,7 +104,6 @@ pub async fn update_inventory_item(
             id: request.id,
             name: request.name,
             unit: request.unit,
-            quantity: request.quantity,
             minimum_quantity: request.minimum_quantity,
             daily_usage: request.daily_usage,
         })
@@ -128,4 +149,57 @@ pub async fn get_inventory_item_details(
     let handler = GetInventoryItemDetailsHandler::new(&repository);
 
     handler.handle(GetInventoryItemDetailsQuery { id }).await
+}
+
+#[tauri::command]
+pub async fn register_inventory_delivery(
+    request: RegisterInventoryDeliveryRequest,
+    state: State<'_, AppState>,
+) -> Result<InventoryItemDetails, String> {
+    let repository = SqliteInventoryRepository::new(state.db.clone());
+    let handler = RegisterInventoryDeliveryHandler::new(&repository);
+
+    handler
+        .handle(RegisterInventoryDeliveryCommand {
+            inventory_item_id: request.inventory_item_id,
+            delivered_on: request.delivered_on,
+            quantity: request.quantity,
+            total_cost: request.total_cost,
+            supplier: request.supplier,
+            notes: request.notes,
+        })
+        .await
+}
+
+#[tauri::command]
+pub async fn apply_inventory_usage(
+    id: String,
+    state: State<'_, AppState>,
+) -> Result<InventoryItemDetails, String> {
+    let repository = SqliteInventoryRepository::new(state.db.clone());
+    let handler = ApplyInventoryUsageHandler::new(&repository);
+
+    handler
+        .handle(ApplyInventoryUsageCommand {
+            inventory_item_id: id,
+        })
+        .await
+}
+
+#[tauri::command]
+pub async fn record_inventory_stocktake(
+    request: RecordInventoryStocktakeRequest,
+    state: State<'_, AppState>,
+) -> Result<InventoryItemDetails, String> {
+    let repository = SqliteInventoryRepository::new(state.db.clone());
+    let handler = RecordInventoryStocktakeHandler::new(&repository);
+
+    handler
+        .handle(RecordInventoryStocktakeCommand {
+            inventory_item_id: request.inventory_item_id,
+            counted_on: request.counted_on,
+            actual_quantity: request.actual_quantity,
+            notes: request.notes,
+        })
+        .await
 }

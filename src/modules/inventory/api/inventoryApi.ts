@@ -4,6 +4,8 @@ import type {
   InventoryItemDetails,
   InventoryItemSummary,
   InventoryListRequest,
+  RecordInventoryStocktakeRequest,
+  RegisterInventoryDeliveryRequest,
   UpdateInventoryItemRequest
 } from "../types/inventory";
 
@@ -25,4 +27,16 @@ export function archiveInventoryItem(id: string) {
 
 export function getInventoryItemDetails(id: string) {
   return invoke<InventoryItemDetails>("get_inventory_item_details", { id });
+}
+
+export function registerInventoryDelivery(request: RegisterInventoryDeliveryRequest) {
+  return invoke<InventoryItemDetails>("register_inventory_delivery", { request });
+}
+
+export function applyInventoryUsage(id: string) {
+  return invoke<InventoryItemDetails>("apply_inventory_usage", { id });
+}
+
+export function recordInventoryStocktake(request: RecordInventoryStocktakeRequest) {
+  return invoke<InventoryItemDetails>("record_inventory_stocktake", { request });
 }

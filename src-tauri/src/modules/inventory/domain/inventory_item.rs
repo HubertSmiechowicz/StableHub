@@ -41,15 +41,9 @@ impl InventoryItem {
         }
     }
 
-    pub fn update_profile(
-        &mut self,
-        name: InventoryItemName,
-        unit: InventoryUnit,
-        stock_level: StockLevel,
-    ) {
+    pub fn update_profile(&mut self, name: InventoryItemName, unit: InventoryUnit) {
         self.name = name;
         self.unit = unit;
-        self.stock_level = stock_level;
     }
 
     pub fn archive(&mut self) {

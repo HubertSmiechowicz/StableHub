@@ -8,6 +8,8 @@ Ten plik zbiera ustalenia, ktore nie powinny zginac przed implementacja. README 
 - Dodac podpowiedzi ras koni w formularzu zamiast sztywnego slownika blokujacego uzytkownika.
 - Zachowac pole rasy jako dowolny tekst na tym etapie, z podpowiedziami/autocomplete w UI.
 - Pilnowac, aby frontend byl modulowy: `App.vue` jako shell, a widoki i komponenty w `src/modules/...`.
+- Przebudowac zuzycie magazynowe: usunac reczne "Rozlicz zuzycie" i liczyc stan oczekiwany automatycznie w read modelu.
+- Przeniesc dzienne zuzycie z pozycji magazynowej na konie/dawki koni.
 
 ## Modul `horse`
 
@@ -148,12 +150,24 @@ Pierwszy zakres:
 - [x] edycja pozycji magazynowej.
 - [x] soft delete pozycji magazynowej.
 - [x] filtrowanie i sortowanie listy pozycji magazynowych.
+- [x] przyjecie dostawy z kosztem zakupu.
+- [x] automatyczne zwiekszenie stanu po zapisaniu dostawy.
+- [x] podstawowe podsumowanie kosztow dostaw na szczegolach pozycji.
+- [x] blokada recznej edycji aktualnego stanu w zwyklej edycji pozycji.
+- [x] rozliczanie zuzycia na podstawie sredniego dziennego zuzycia i liczby pelnych dni.
+- [x] inwentaryzacja z zapisem stanu oczekiwanego, faktycznego i roznicy.
 
 ### Do zaimplementowania pozniej
 
 - inwentaryzacja/korekta stanu magazynowego,
 - historia ruchow magazynowych,
-- przyjecie dostawy,
+- usuniecie pola `daily_usage` z pozycji magazynowej po wprowadzeniu dawek koni,
+- przypisanie pozycji magazynowych do koni z dziennymi dawkami, np. siano/owies/pasza na konia,
+- dzienne zuzycie ma byc definiowane na poziomie konia albo konfiguracji zywienia konia, nie w module inwentaryzacji,
+- stan oczekiwany magazynu ma byc liczony automatycznie z przypisan kon -> pozycja magazynowa -> dzienna dawka oraz liczby dni od ostatniego punktu kontrolnego,
+- usuniecie przycisku/operacji recznego `Rozlicz zuzycie` po wdrozeniu automatycznego stanu oczekiwanego,
+- raport inwentaryzacji: oczekiwane zuzycie vs faktyczne zuzycie,
+- korekta albo anulowanie blednie wprowadzonej dostawy,
 - rejestracja zuzycia,
 - powiadomienia o niskim stanie magazynowym,
 - alerty na dashboardzie,

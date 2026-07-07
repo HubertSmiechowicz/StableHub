@@ -356,6 +356,17 @@ h1 {
   resize: vertical;
 }
 
+.readonly-value {
+  display: flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 10px;
+  border: 1px solid #283034;
+  border-radius: 8px;
+  background: #11151a;
+  color: #f6f7f9;
+}
+
 .entity-form .full-row {
   grid-column: 1 / -1;
 }
@@ -780,6 +791,56 @@ h1 {
   color: #f6f7f9;
 }
 
+.subsection-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.subsection-heading h3 {
+  margin: 4px 0 0;
+}
+
+.delivery-context {
+  margin-top: 12px;
+}
+
+.inventory-preview {
+  margin-top: 18px;
+}
+
+.delivery-history,
+.delivery-list {
+  display: grid;
+  gap: 12px;
+}
+
+.delivery-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  min-height: 68px;
+  padding: 12px;
+  border: 1px solid #283034;
+  border-radius: 8px;
+  background: #11151a;
+}
+
+.delivery-row p {
+  margin: 4px 0 0;
+  color: #a4acb5;
+}
+
+.delivery-row span {
+  color: #8df3a7;
+}
+
+.delivery-row > div:last-child {
+  text-align: right;
+}
+
 .error-message {
   margin-top: 12px;
   color: #ffb4a8;
@@ -895,6 +956,15 @@ h1 {
 
   .details-grid {
     grid-template-columns: 1fr;
+  }
+
+  .delivery-row {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .delivery-row > div:last-child {
+    text-align: left;
   }
 
   .calendar-header {

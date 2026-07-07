@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from "vue";
-import { getInventoryItemDetails, updateInventoryItem } from "../api/inventoryApi";
-import InventoryCreateForm from "../components/InventoryCreateForm.vue";
+import {
+  getInventoryItemDetails,
+  registerInventoryDelivery
+} from "../api/inventoryApi";
+import InventoryDeliveryForm from "../components/InventoryDeliveryForm.vue";
 import type {
-  CreateInventoryItemRequest,
-  InventoryItemDetails
+  InventoryItemDetails,
+  RegisterInventoryDeliveryRequest
 } from "../types/inventory";
 import { formatError } from "../../../shared/errors";
 
@@ -13,8 +16,8 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  saved: [id: string];
-  cancel: [];
+  created: [id: string];
+  cancel: [id: string];
 }>();
 
 const item = ref<InventoryItemDetails | null>(null);
@@ -34,20 +37,14 @@ async function load() {
   }
 }
 
-async function submit(request: CreateInventoryItemRequest) {
+async function submit(request: RegisterInventoryDeliveryRequest) {
   error.value = null;
 
   try {
-    const updated = await updateInventoryItem({
-      id: props.itemId,
-      name: request.name,
-      unit: request.unit,
-      minimum_quantity: request.minimum_quantity,
-      daily_usage: request.daily_usage
-    });
-    emit("saved", updated.id);
+    const updated = await registerInventoryDelivery(request);
+    emit("created", updated.id);
   } catch (caught) {
-    error.value = formatError(caught, "Nie udało się zaktualizować pozycji magazynowej.");
+    error.value = formatError(caught, "Nie udało się zapisać dostawy magazynowej.");
   }
 }
 
@@ -59,8 +56,11 @@ watch(() => props.itemId, load);
   <section class="section-toolbar">
     <div>
       <p class="eyebrow">Moduł magazynu</p>
-      <h2>Edytuj pozycję</h2>
+      <h2>Zarejestruj dostawę</h2>
     </div>
+    <button class="ghost-action" type="button" @click="emit('cancel', itemId)">
+      Wróć do szczegółów
+    </button>
   </section>
 
   <p v-if="error" class="error-message">{{ error }}</p>
@@ -68,12 +68,14 @@ watch(() => props.itemId, load);
     <h2>Ładowanie</h2>
     <p>Trwa pobieranie pozycji magazynowej.</p>
   </section>
-  <InventoryCreateForm
+  <InventoryDeliveryForm
     v-else-if="item"
     :item="item"
-    title="Edycja pozycji magazynowej"
-    submit-label="Zapisz zmiany"
     @submit="submit"
-    @cancel="emit('cancel')"
+    @cancel="emit('cancel', item.id)"
   />
+  <section v-else class="panel empty-state compact">
+    <h2>Nie znaleziono pozycji</h2>
+    <p>Wróć do listy i wybierz pozycję ponownie.</p>
+  </section>
 </template>

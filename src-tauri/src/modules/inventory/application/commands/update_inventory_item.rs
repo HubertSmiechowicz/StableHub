@@ -1,13 +1,12 @@
 use crate::modules::inventory::{
     application::{dto::InventoryItemDetails, ports::InventoryRepository},
-    domain::{InventoryItemName, InventoryItemStatus, InventoryUnit, StockLevel},
+    domain::{InventoryItemName, InventoryItemStatus, InventoryUnit},
 };
 
 pub struct UpdateInventoryItemCommand {
     pub id: String,
     pub name: String,
     pub unit: String,
-    pub quantity: f64,
     pub minimum_quantity: Option<f64>,
     pub daily_usage: Option<f64>,
 }
@@ -44,7 +43,6 @@ where
         let name = InventoryItemName::new(command.name).map_err(|error| error.to_string())?;
         let unit =
             InventoryUnit::try_from(command.unit.as_str()).map_err(|error| error.to_string())?;
-        let stock_level = StockLevel::new(command.quantity).map_err(|error| error.to_string())?;
         let minimum_quantity = normalize_non_negative(command.minimum_quantity)?;
         let daily_usage = normalize_non_negative(command.daily_usage)?;
 
@@ -63,7 +61,7 @@ where
             );
         }
 
-        profile.item.update_profile(name, unit, stock_level);
+        profile.item.update_profile(name, unit);
         profile.minimum_quantity = minimum_quantity;
         profile.daily_usage = daily_usage;
         profile.updated_at = current_timestamp();

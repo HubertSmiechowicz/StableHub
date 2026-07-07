@@ -40,7 +40,23 @@ export function formatOptionalQuantity(value: number | null, unit: string) {
   return formatQuantity(value, unit);
 }
 
-function formatNumber(value: number) {
+export function formatCurrency(value: number) {
+  return new Intl.NumberFormat("pl-PL", {
+    currency: "PLN",
+    maximumFractionDigits: 2,
+    style: "currency"
+  }).format(value);
+}
+
+export function formatOptionalCurrency(value: number | null) {
+  if (value === null) {
+    return "Nie obliczono";
+  }
+
+  return formatCurrency(value);
+}
+
+export function formatNumber(value: number) {
   return new Intl.NumberFormat("pl-PL", {
     maximumFractionDigits: 2
   }).format(value);

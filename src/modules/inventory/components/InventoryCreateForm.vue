@@ -2,7 +2,7 @@
 import { reactive, watch } from "vue";
 import { Warehouse } from "@lucide/vue";
 import type { CreateInventoryItemRequest, InventoryItemDetails } from "../types/inventory";
-import { inventoryUnitOptions } from "../utils/inventoryLabels";
+import { formatQuantity, inventoryUnitOptions } from "../utils/inventoryLabels";
 
 const props = withDefaults(
   defineProps<{
@@ -25,7 +25,6 @@ const emit = defineEmits<{
 const form = reactive({
   name: "",
   unit: "kg",
-  quantity: 0,
   minimum_quantity: null as number | null,
   daily_usage: null as number | null
 });
@@ -35,7 +34,6 @@ watch(
   (item) => {
     form.name = item?.name ?? "";
     form.unit = item?.unit ?? "kg";
-    form.quantity = item?.quantity ?? 0;
     form.minimum_quantity = item?.minimum_quantity ?? null;
     form.daily_usage = item?.daily_usage ?? null;
   },
@@ -46,7 +44,6 @@ function submitForm() {
   emit("submit", {
     name: form.name,
     unit: form.unit,
-    quantity: Number(form.quantity),
     minimum_quantity:
       form.minimum_quantity === null ? null : Number(form.minimum_quantity),
     daily_usage: form.daily_usage === null ? null : Number(form.daily_usage)
@@ -76,7 +73,9 @@ function submitForm() {
       </label>
       <label>
         <span>Aktualny stan</span>
-        <input v-model.number="form.quantity" type="number" min="0" step="0.01" required />
+        <strong class="readonly-value">
+          {{ formatQuantity(item?.quantity ?? 0, item?.unit ?? form.unit) }}
+        </strong>
       </label>
       <label>
         <span>Minimalny stan</span>

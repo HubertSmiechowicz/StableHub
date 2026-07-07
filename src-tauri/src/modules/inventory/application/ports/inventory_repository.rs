@@ -1,7 +1,8 @@
 use async_trait::async_trait;
 
 use crate::modules::inventory::application::dto::{
-    InventoryItemDetails, InventoryItemProfileData, InventoryItemSummary,
+    InventoryDeliveryData, InventoryItemDetails, InventoryItemProfileData, InventoryItemSummary,
+    InventoryStocktakeData,
 };
 
 #[derive(Debug, Clone)]
@@ -43,4 +44,12 @@ pub trait InventoryRepository {
         options: &InventoryListOptions,
     ) -> Result<Vec<InventoryItemSummary>, String>;
     async fn find_details_by_id(&self, id: &str) -> Result<Option<InventoryItemDetails>, String>;
+    async fn register_delivery(&self, delivery: &InventoryDeliveryData) -> Result<(), String>;
+    async fn apply_usage(
+        &self,
+        item_id: &str,
+        new_quantity: f64,
+        applied_at: &str,
+    ) -> Result<(), String>;
+    async fn record_stocktake(&self, stocktake: &InventoryStocktakeData) -> Result<(), String>;
 }

@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from "vue";
-import { archiveInventoryItem, getInventoryItemDetails } from "../api/inventoryApi";
+import {
+  applyInventoryUsage,
+  archiveInventoryItem,
+  getInventoryItemDetails
+} from "../api/inventoryApi";
 import InventoryItemDetailsCard from "../components/InventoryItemDetailsCard.vue";
 import type { InventoryItemDetails } from "../types/inventory";
 import { formatError } from "../../../shared/errors";
@@ -12,6 +16,8 @@ const props = defineProps<{
 const emit = defineEmits<{
   back: [];
   edit: [id: string];
+  registerDelivery: [id: string];
+  recordStocktake: [id: string];
 }>();
 
 const item = ref<InventoryItemDetails | null>(null);
@@ -46,6 +52,16 @@ async function archiveCurrentItem() {
   }
 }
 
+async function applyCurrentUsage() {
+  error.value = null;
+
+  try {
+    item.value = await applyInventoryUsage(props.itemId);
+  } catch (caught) {
+    error.value = formatError(caught, "Nie udało się rozliczyć zużycia magazynowego.");
+  }
+}
+
 onMounted(load);
 watch(() => props.itemId, load);
 </script>
@@ -69,6 +85,9 @@ watch(() => props.itemId, load);
     :item="item"
     @edit="emit('edit', item.id)"
     @archive="archiveCurrentItem"
+    @apply-usage="applyCurrentUsage"
+    @register-delivery="emit('registerDelivery', item.id)"
+    @record-stocktake="emit('recordStocktake', item.id)"
   />
   <section v-else class="panel empty-state compact">
     <h2>Nie znaleziono pozycji</h2>

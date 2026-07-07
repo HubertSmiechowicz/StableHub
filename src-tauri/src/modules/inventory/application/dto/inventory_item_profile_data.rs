@@ -8,4 +8,5 @@ pub struct InventoryItemProfileData {
     pub created_at: String,
     pub updated_at: String,
     pub archived_at: Option<String>,
+    pub last_usage_applied_at: Option<String>,
 }

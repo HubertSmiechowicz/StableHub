@@ -24,9 +24,11 @@ import HorseDetailsView from "./modules/horses/views/HorseDetailsView.vue";
 import HorseEditView from "./modules/horses/views/HorseEditView.vue";
 import HorsesListView from "./modules/horses/views/HorsesListView.vue";
 import InventoryCreateView from "./modules/inventory/views/InventoryCreateView.vue";
+import InventoryDeliveryCreateView from "./modules/inventory/views/InventoryDeliveryCreateView.vue";
 import InventoryDetailsView from "./modules/inventory/views/InventoryDetailsView.vue";
 import InventoryEditView from "./modules/inventory/views/InventoryEditView.vue";
 import InventoryListView from "./modules/inventory/views/InventoryListView.vue";
+import InventoryStocktakeCreateView from "./modules/inventory/views/InventoryStocktakeCreateView.vue";
 
 type ViewId =
   | "dashboard"
@@ -37,7 +39,9 @@ type ViewId =
   | "inventory"
   | "inventory-create"
   | "inventory-details"
+  | "inventory-delivery-create"
   | "inventory-edit"
+  | "inventory-stocktake-create"
   | "finance"
   | "calendar"
   | "calendar-create"
@@ -85,8 +89,12 @@ const pageTitle = computed(() => {
       return "Nowa pozycja";
     case "inventory-details":
       return "Szczegóły pozycji";
+    case "inventory-delivery-create":
+      return "Nowa dostawa";
     case "inventory-edit":
       return "Edytuj pozycję";
+    case "inventory-stocktake-create":
+      return "Inwentaryzacja";
     case "calendar":
       return "Kalendarz";
     case "calendar-create":
@@ -132,7 +140,9 @@ const pageSubtitle = computed(() => {
     currentView.value === "inventory" ||
     currentView.value === "inventory-create" ||
     currentView.value === "inventory-details" ||
-    currentView.value === "inventory-edit"
+    currentView.value === "inventory-delivery-create" ||
+    currentView.value === "inventory-edit" ||
+    currentView.value === "inventory-stocktake-create"
   ) {
     return "Moduł magazynu";
   }
@@ -184,6 +194,16 @@ function openInventoryDetails(id: string) {
 function openInventoryEdit(id: string) {
   selectedInventoryItemId.value = id;
   currentView.value = "inventory-edit";
+}
+
+function openInventoryDeliveryCreate(id: string) {
+  selectedInventoryItemId.value = id;
+  currentView.value = "inventory-delivery-create";
+}
+
+function openInventoryStocktakeCreate(id: string) {
+  selectedInventoryItemId.value = id;
+  currentView.value = "inventory-stocktake-create";
 }
 
 function backToInventoryList() {
@@ -255,7 +275,9 @@ function openCalendarCreate(date: string | null = null) {
               (item.id === 'inventory' &&
                 (currentView === 'inventory-create' ||
                   currentView === 'inventory-details' ||
-                  currentView === 'inventory-edit')) ||
+                  currentView === 'inventory-delivery-create' ||
+                  currentView === 'inventory-edit' ||
+                  currentView === 'inventory-stocktake-create')) ||
               (item.id === 'calendar' &&
                 (currentView === 'calendar-create' ||
                   currentView === 'calendar-details' ||
@@ -320,6 +342,20 @@ function openCalendarCreate(date: string | null = null) {
         :item-id="selectedInventoryItemId"
         @back="backToInventoryList"
         @edit="openInventoryEdit"
+        @register-delivery="openInventoryDeliveryCreate"
+        @record-stocktake="openInventoryStocktakeCreate"
+      />
+      <InventoryDeliveryCreateView
+        v-else-if="currentView === 'inventory-delivery-create' && selectedInventoryItemId"
+        :item-id="selectedInventoryItemId"
+        @created="openInventoryDetails"
+        @cancel="openInventoryDetails"
+      />
+      <InventoryStocktakeCreateView
+        v-else-if="currentView === 'inventory-stocktake-create' && selectedInventoryItemId"
+        :item-id="selectedInventoryItemId"
+        @saved="openInventoryDetails"
+        @cancel="openInventoryDetails"
       />
       <InventoryEditView
         v-else-if="currentView === 'inventory-edit' && selectedInventoryItemId"
